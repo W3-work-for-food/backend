@@ -1,3 +1,4 @@
+
 import os
 from pathlib import Path
 
@@ -12,6 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-gey+#6k%*y=m!9_wm5g2rwfw6ikfy60v1h9pzn%hv7c_%d&jag'
 
 #DEBUG = os.getenv('DEBUG', 'false').lower()
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -25,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'drf_spectacular',
 
     'rest_framework',
@@ -34,6 +37,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'ambassadors.apps.AmbassadorsConfig',
     'api.apps.ApiConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -90,6 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 LANGUAGE_CODE = 'en-us'
