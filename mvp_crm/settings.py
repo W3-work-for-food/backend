@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'ambassadors.apps.AmbassadorsConfig',
     'api.apps.ApiConfig',
-
 ]
 
 MIDDLEWARE = [
@@ -78,7 +77,7 @@ DATABASES = {
     }
 }
 
-
+AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -114,6 +113,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
