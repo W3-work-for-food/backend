@@ -1,44 +1,47 @@
-
 import os
 from pathlib import Path
 
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SECRET_KEY')
 
-#SECRET_KEY = os.getenv('SECRET_KEY', 'false')
-SECRET_KEY = 'django-insecure-gey+#6k%*y=m!9_wm5g2rwfw6ikfy60v1h9pzn%hv7c_%d&jag'
+DEBUG = bool(os.getenv('DEBUG_MODE', 'False').lower() in 'true')
 
-#DEBUG = os.getenv('DEBUG', 'false').lower()
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
 
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_filters',
-    'drf_spectacular',
 
+    'django_filters',
+
+]
+
+THIRD_PARTY_APPS = [
+
+    'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
-    #'celery',
-    
+    # 'celery',
+]
+
+PROJECT_APPS = [
+    'mvp_crm',
     'users.apps.UsersConfig',
     'ambassadors.apps.AmbassadorsConfig',
     'api.apps.ApiConfig',
-
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,15 +73,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mvp_crm.wsgi.application'
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": os.getenv("BACKEND_POSTGRES_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.getenv("BACKEND_POSTGRES_DB", "db.sqlite3"),
+        "USER": os.getenv("BACKEND_POSTGRES_USER", "crm"),
+        "PASSWORD": os.getenv("BACKEND_POSTGRES_PASSWORD", "pswrd"),
+        "HOST": os.getenv("BACKEND_POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("BACKEND_POSTGRES_CONTAINER_PORT", "5432"),
     }
 }
-
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -95,8 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -105,10 +107,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'collected_static'
-
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
