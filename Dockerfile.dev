@@ -13,7 +13,7 @@ COPY ./setup.py ./
 RUN pip install -e ./
 
 COPY ./start.sh ./
-
+RUN chmod +x ./start.sh
 COPY . $APP_HOME
 
 ENTRYPOINT ["./start.sh"]
