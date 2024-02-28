@@ -1,10 +1,9 @@
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from django_filters.rest_framework import DjangoFilterBackend
 from api.v1.serializers import NotificationSerializer
-
 
 class NotificationViewSet(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
@@ -13,10 +12,11 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
     """
     Заглушка.
     """
-
-    # queryset = Notification.objects.all()
+    #queryset = Notification.objects.filter(status='Непрочитано')
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['type', 'date']
 
     @action(detail=False, methods=['get'])
     def viewed(self, request, *args, **kwargs):
@@ -26,4 +26,6 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
         """
         viewed_notifications = self.queryset.filter(status='Прочитано')
         serializer = self.get_serializer(viewed_notifications, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
