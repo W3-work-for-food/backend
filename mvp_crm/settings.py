@@ -4,6 +4,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+
+VERSION_API = '1'
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +19,9 @@ SECRET_KEY = 'django-insecure-gey+#6k%*y=m!9_wm5g2rwfw6ikfy60v1h9pzn%hv7c_%d&jag
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 
 
 INSTALLED_APPS = [
@@ -70,6 +74,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mvp_crm.wsgi.application'
 
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -113,6 +118,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
@@ -122,7 +128,7 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'API V1 Сервис ИПР',
+    'TITLE': 'MVP CRM V1',
     'VERSION': 'V1',
     'SERVE_INCLUDE_SCHEMA': False,
     'SWAGGER_UI_SETTINGS': {
@@ -130,3 +136,6 @@ SPECTACULAR_SETTINGS = {
     },
     'COMPONENT_SPLIT_REQUEST': True
 }
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+LOGIN_URL = '/'
