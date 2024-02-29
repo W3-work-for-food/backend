@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
-
-User = get_user_model()
+from users.models import User
 
 
 class NotificationStatusSerializer(serializers.ModelSerializer):
@@ -26,3 +24,8 @@ class NotificationSerializer(serializers.ModelSerializer):
             'type',
             'status',
         )
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name')

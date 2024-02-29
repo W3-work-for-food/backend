@@ -2,11 +2,14 @@ from django.contrib import admin
 from django.urls import include, path
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
+#from api.views import user_login, user_logout
+from rest_framework.authtoken import views
+from mvp_crm.auth import CustomObtainAuthToken
 
 VERSION_API = '1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('login/', CustomObtainAuthToken.as_view()),
 ]
