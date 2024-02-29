@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from api.v1.serializers import NotificationSerializer
 
+
 class NotificationViewSet(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
                           mixins.ListModelMixin,
@@ -12,7 +13,7 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
     """
     Заглушка.
     """
-    #queryset = Notification.objects.filter(status='Непрочитано')
+    # queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -24,8 +25,16 @@ class NotificationViewSet(mixins.RetrieveModelMixin,
         Возвращает список прочитанных уведомлений.
         Временная заглушка пока что.
         """
-        viewed_notifications = self.queryset.filter(status='Прочитано')
+        viewed_notifications = self.queryset.filter(status='прочитано')
         serializer = self.get_serializer(viewed_notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+    @action(detail=False, methods=['get'])
+    def unviewed(self, request, *args, **kwargs):
+        """
+        Возвращает список непрочитанных уведомлений.
+        Временная заглушка пока что.
+        """
+        viewed_notifications = self.queryset.filter(status='непрочитано')
+        serializer = self.get_serializer(viewed_notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
