@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -136,6 +136,3 @@ SPECTACULAR_SETTINGS = {
     },
     'COMPONENT_SPLIT_REQUEST': True
 }
-
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
-LOGIN_URL = '/'
