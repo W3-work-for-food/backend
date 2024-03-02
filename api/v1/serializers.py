@@ -29,3 +29,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
+
+
+
+class MerchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('name', 'category', 'size', 'price')

@@ -1,0 +1,15 @@
+[
+    {"id": 1, "merch_type": "Толстовка", "category": "outerwear", "price":"5000"},
+    {"id": 2, "merch_type": "Кофе", "category": "None", "price":"800"},
+    {"id": 3, "merch_type": "Стикеры", "category": "None", "price":"500"},
+    {"id": 4, "merch_type": "Плюс", "category": "None", "price":"300"},
+    {"id": 5, "merch_type": "Арзамас", "category": "None", "price":"50000"},
+    {"id": 6, "merch_type": "Шоппер", "category": "None", "price":"1000"},
+    {"id": 7, "merch_type": "Рюкзак", "category": "None", "price":"3000"},
+    {"id": 8, "merch_type": "Сумка кросс", "category": "None", "price":"3500"},
+    {"id": 9, "merch_type": "Носки", "category": "socks", "price":"400"},
+    {"id": 10, "merch_type": "Скидка 50%", "category": "None", "price":"500"},
+    {"id": 11, "merch_type": "Алиса мини", "category": "None", "price":"6000"},
+    {"id": 12, "merch_type": "Алиса биг", "category": "None", "price":"18000"},
+    {"id": 13, "merch_type": "Клуб учащихся ночью", "category": "None", "price":"1200"}
+]

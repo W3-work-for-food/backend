@@ -15,5 +15,5 @@ RUN pip install -e ./
 COPY ./start.sh ./
 
 COPY . $APP_HOME
-
-ENTRYPOINT ["./start.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mvp_crm.wsgi"]
+#ENTRYPOINT ["./start.sh"]
