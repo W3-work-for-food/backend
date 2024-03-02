@@ -1,7 +1,7 @@
 from django.db import models
-from ambassadors.validators import validate_tgname
+from ambassadors.validators import validate_tg_name
 
-
+# TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
     ('active', 'Активный'),
     ('paused', 'На паузе'),
@@ -87,7 +87,7 @@ class AmbassadorAddress(models.Model):
 class Ambassador(models.Model):
     telegram = models.CharField(
         max_length=35,
-        validators=[validate_tgname],
+        validators=[validate_tg_name],
         unique=True,
         verbose_name='Телеграм'
     )
@@ -131,10 +131,10 @@ class Ambassador(models.Model):
     )
     comment = models.TextField(
         max_length=1024,
+        blank=True,
         verbose_name='Комментарий'
     )
-    guide_status = models.CharField(
-        max_length=255,
-        choices=STATUS_CHOICES,
+    guide_status = models.BooleanField(
+        default=False,
         verbose_name='Статус гайда'
     )

@@ -22,12 +22,13 @@ python manage.py collectstatic --noinput \
 
 
 echo "Creating superuser..."
-echo "from django.contrib.auth.models import User; \
+echo "from users.models import User; \
       User.objects.filter(email='$EMAIL').delete(); \
       User.objects.create_superuser('$LOGIN', '$EMAIL', '$PASSWORD')" \
       | python manage.py shell \
       && echo "Superuser created"
 
+from django.contrib.auth import get_user_model
 echo "Starting gunicorn..." \
     && gunicorn mvp_crm.wsgi:application --bind 0.0.0.0:8000 --reload
 
