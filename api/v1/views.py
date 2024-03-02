@@ -9,7 +9,6 @@ from .serializers import (
 )
 
 
-
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для пользователей"""
 
@@ -22,7 +21,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class AmbassadorStatusView(viewsets.ModelViewSet):
+class AmbassadorStatusView(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для статусов амбассадоров"""
 
     serializer_class = AmbassadorStatusSerializer
