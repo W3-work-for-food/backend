@@ -14,10 +14,6 @@ class User(AbstractUser):
         max_length=64,
         verbose_name='Имя'
     )
-    middle_name = models.CharField(
-        max_length=64,
-        verbose_name='Отчество'
-    )
     last_name = models.CharField(
         max_length=64,
         verbose_name='Фамилия'
