@@ -13,6 +13,7 @@ fi
 
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
+python manage.py download_data
 
 gunicorn mvp_crm.wsgi:application --bind 0.0.0.0:8000 --reload
 
