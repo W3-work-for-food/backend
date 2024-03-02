@@ -5,10 +5,8 @@ from .serializers import UserSerializer, MerchSerializer
 from ambassadors.models import Merch
 
 
-
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для пользователей"""
-    
     permission_classes = [IsAuthenticated,]
     serializer_class = UserSerializer
 
@@ -18,12 +16,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-class MerchViewSet(viewsets.ModelViewSet):
-    """Вьюсет для пользователей"""
-    
+class MerchViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для мерча"""
     permission_classes = [IsAuthenticated,]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
-

@@ -38,12 +38,15 @@ class MerchSent(models.Model):
     ambassador = models.ForeignKey(
         Ambassador,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
+        verbose_name='Амбассадор',
     )
-    ambassador = models.ForeignKey(
-        Ambassador,
+    merch = models.ForeignKey(
+        Merch,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
+        verbose_name='Мерч',
+    )
+    budget = models.SmallIntegerField(
+        verbose_name='Бюджет',
     )
 
     class Meta:
