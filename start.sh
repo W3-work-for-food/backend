@@ -28,7 +28,6 @@ echo "from users.models import User; \
       | python manage.py shell \
       && echo "Superuser created"
 
-from django.contrib.auth import get_user_model
 echo "Starting gunicorn..." \
     && gunicorn mvp_crm.wsgi:application --bind 0.0.0.0:8000 --reload
 
