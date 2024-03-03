@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import User
-from ambassadors.models import AmbassadorStatus, Content
+
+from ambassadors.models import AmbassadorStatus, Content, Merch
+
 
 
 class NotificationStatusSerializer(serializers.ModelSerializer):
@@ -43,3 +45,9 @@ class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
         fields = ['id', 'link', 'date', 'guide_condition']
+
+
+class MerchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Merch
+        fields = ('merch_type', 'category', 'price')

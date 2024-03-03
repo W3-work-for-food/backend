@@ -1,17 +1,16 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import mixins, serializers, status, viewsets
-from ambassadors.models import AmbassadorStatus, Content
+
+from ambassadors.models import AmbassadorStatus, Content, Merch
 from .serializers import (
-    UserSerializer,
-    AmbassadorStatusSerializer,
+    UserSerializer, MerchSerializer
+    UserSerializer, AmbassadorStatusSerializer,
     ContentSerializer
 )
 
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для пользователей"""
-
+class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для текущего пользователя"""
     permission_classes = [IsAuthenticated,]
     serializer_class = UserSerializer
 
@@ -33,3 +32,9 @@ class ContentView(viewsets.ModelViewSet):
 
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
+
+class MerchViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для мерча"""
+    permission_classes = [IsAuthenticated,]
+    serializer_class = MerchSerializer
+    queryset = Merch.objects.all()
