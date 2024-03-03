@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import User
-from ambassadors.models import Merch
+
+from ambassadors.models import AmbassadorStatus, Content, Merch
+
 
 
 class NotificationStatusSerializer(serializers.ModelSerializer):
@@ -26,11 +28,23 @@ class NotificationSerializer(serializers.ModelSerializer):
             'status',
         )
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
 
+
+class AmbassadorStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmbassadorStatus
+        fields = ['id', 'slug', 'status']
+
+
+class ContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Content
+        fields = ['id', 'link', 'date', 'guide_condition']
 
 
 class MerchSerializer(serializers.ModelSerializer):

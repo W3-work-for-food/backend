@@ -74,7 +74,14 @@ class Profile(models.Model):
 
 
 class Content(models.Model):
-    pass
+    link = models.URLField(max_length=255, unique=False, blank=False)
+    date = models.DateTimeField(
+        max_length=30,
+        auto_now_add=True,
+        unique=False,
+        blank=False
+    )
+    guide_condition = models.BooleanField(unique=False, blank=False)
 
 
 class Promocode(models.Model):
@@ -83,7 +90,11 @@ class Promocode(models.Model):
 
 
 class AmbassadorStatus(models.Model):
-    pass
+    slug = models.SlugField(max_length=255, unique=True)
+    status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.status
 
 
 class AmbassadorAddress(models.Model):
