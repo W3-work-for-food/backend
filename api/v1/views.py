@@ -4,7 +4,7 @@ from rest_framework import mixins, serializers, status, viewsets
 
 from ambassadors.models import AmbassadorStatus, Content, Merch
 from .serializers import (
-    UserSerializer, MerchSerializer
+    UserSerializer, MerchSerializer,
     UserSerializer, AmbassadorStatusSerializer,
     ContentSerializer
 )
@@ -27,7 +27,7 @@ class AmbassadorStatusView(viewsets.ReadOnlyModelViewSet):
     queryset = AmbassadorStatus.objects.all()
 
 
-class ContentView(viewsets.ModelViewSet):
+class ContentViewSet(viewsets.ModelViewSet):
     """Вьюсет для контента"""
 
     serializer_class = ContentSerializer

@@ -1,11 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import UserViewSet, ContentView, AmbassadorStatusView, GetUserViewSet, MerchViewSet
+from .views import ContentViewSet, AmbassadorStatusView, GetUserViewSet, MerchViewSet
 
 
 router = DefaultRouter()
-router.register('content', ContentView, basename='content')
+router.register('content', ContentViewSet, basename='content')
 router.register(
     'ambassador_status',
     AmbassadorStatusView,
