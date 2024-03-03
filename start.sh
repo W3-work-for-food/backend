@@ -17,15 +17,13 @@ python manage.py makemigrations --noinput \
     && python manage.py migrate --noinput \
     && echo "Migrations complited"
 
-echo "Downloading data..."
-python manage.py makemigrations --noinput \
-    && python manage.py migrate --noinput \
-    && echo "Download complited"
-
-
 echo "Collecting static files..."
 python manage.py collectstatic --noinput \
     && echo "Static files collected"
+
+echo "Downloading data..."
+python manage.py download_data --noinput \
+    && echo "Download complited"
 
 
 echo "Creating superuser..."

@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Merch
-from ambassadors.models import Ambassador
+from ambassadors.models import Ambassador, Merch
 
 
 @admin.register(Ambassador)
@@ -27,4 +26,3 @@ class MerchAdmin(admin.ModelAdmin):
         'price'
     ]
     empty_value_display = ' пусто '
-

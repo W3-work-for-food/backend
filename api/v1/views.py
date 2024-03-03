@@ -5,8 +5,8 @@ from .serializers import UserSerializer, MerchSerializer
 from ambassadors.models import Merch
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для пользователей"""
+class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для текущего пользователя"""
     permission_classes = [IsAuthenticated,]
     serializer_class = UserSerializer
 
