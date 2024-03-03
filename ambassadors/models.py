@@ -1,7 +1,6 @@
 from django.db import models
+from django.db import models
 from users.models import User
-from django.contrib.auth import get_user_model
-
 from ambassadors.validators import validate_tg_name
 
 # TODO: Добавить к Шамилю в модель  в поле статус
@@ -22,6 +21,27 @@ CLOTHING_SIZE_CHOICES = [
     ('extra_large', 'XL'),
 ]
 
+class Merch(models.Model):
+    """Модель для мерча"""
+    merch_type = models.CharField(
+        verbose_name='Наименование мерча',
+        max_length=50,
+    )
+    category = models.CharField(
+        verbose_name='Категория мерча',
+        max_length=50,
+    )
+    price = models.SmallIntegerField(
+        verbose_name='Стоимость мерча',
+    )
+
+    class Meta:
+        verbose_name = 'Мерч'
+        verbose_name_plural = 'Мерч'
+
+
+    def __str__(self):
+        return f'{self.merch_type}'
 
 class Notification(models.Model):
     pass
@@ -54,10 +74,6 @@ class Profile(models.Model):
 
 
 class Content(models.Model):
-    pass
-
-
-class Merch(models.Model):
     pass
 
 
@@ -120,42 +136,6 @@ class Ambassador(models.Model):
         null=True,
         blank=True,
         verbose_name='Контент'
-
-
-class Merch(models.Model):
-    """Модель для мерча"""
-    merch_type = models.CharField(
-        verbose_name='Наименование мерча',
-        max_length=50,
-    )
-    category = models.CharField(
-        verbose_name='Категория мерча',
-        max_length=50,
-    )
-    price = models.SmallIntegerField(
-        verbose_name='Стоимость мерча',
-    )
-
-    class Meta:
-        verbose_name = 'Мерч'
-        verbose_name_plural = 'Мерч'
-
-
-    def __str__(self):
-        return f'{self.merch_type}'
-    
-
-class MerchSent(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Менеджер',
-    )
-    ambassador = models.ForeignKey(
-        Ambassador,
-        on_delete=models.CASCADE,
-        verbose_name='Амбассадор',
->>>>>>> develop
     )
     merch = models.ForeignKey(
         Merch,
@@ -177,11 +157,24 @@ class MerchSent(models.Model):
         default=False,
         verbose_name='Статус гайда'
     )
+
+
+class MerchSent(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Менеджер',
+    )
+    ambassador = models.ForeignKey(
+        Ambassador,
+        on_delete=models.CASCADE,
+        verbose_name='Амбассадор',
+    )
+    merch = models.ForeignKey(
+        Merch,
+        on_delete=models.CASCADE,
         verbose_name='Мерч',
     )
-    budget = models.SmallIntegerField(
+    budget = models.PositiveSmallIntegerField(
         verbose_name='Бюджет',
     )
-
-    class Meta:
-        abstract = True
