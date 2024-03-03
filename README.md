@@ -29,5 +29,5 @@ docker-compose down -v
 #### Endpoints
 
 1. [localhost/login/]() - авторизация
-2. [localhost/api/users/]() - возвращает Имя/Фамилия менеджера
+2. [localhost/api/v1/users/]() - возвращает Имя/Фамилия менеджера
 3. [localhost/api/docs/]() - SWAGGER
