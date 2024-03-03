@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from .models import Merch
 from ambassadors.models import Ambassador
 
 
@@ -15,3 +15,16 @@ class AmbassadorAdmin(admin.ModelAdmin):
         'ambassador_status', 'ambassador_address', 'profile',
         'content', 'merch', 'promocode', 'comment'
     )
+
+
+@admin.register(Merch)
+class MerchAdmin(admin.ModelAdmin):
+    """Отображение мерча в админке."""
+    list_display = [
+        'id',
+        'merch_type',
+        'category',
+        'price'
+    ]
+    empty_value_display = ' пусто '
+
