@@ -39,7 +39,6 @@ class CustomAuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-
 class CustomObtainAuthToken(ObtainAuthToken):
     """Кастомный класс аутентификации."""
     serializer_class = CustomAuthTokenSerializer
