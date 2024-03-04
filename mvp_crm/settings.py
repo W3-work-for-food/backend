@@ -21,9 +21,13 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_filters',
+
 ]
 
 THIRD_PARTY_APPS = [
+
     'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
@@ -35,6 +39,7 @@ PROJECT_APPS = [
     'users.apps.UsersConfig',
     'ambassadors.apps.AmbassadorsConfig',
     'api.apps.ApiConfig',
+    'notifications.apps.NotificationsConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -85,6 +90,12 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
