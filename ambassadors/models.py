@@ -3,11 +3,6 @@ from django.db import models
 from users.models import User
 from ambassadors.validators import validate_tg_name
 
-<<<<<<< HEAD
-from django.contrib.auth import get_user_model
-
-Ambassador = get_user_model()
-=======
 # TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
     ('active', 'Активный'),
@@ -194,4 +189,3 @@ class MerchSent(models.Model):
     budget = models.PositiveSmallIntegerField(
         verbose_name='Бюджет',
     )
->>>>>>> origin/develop
