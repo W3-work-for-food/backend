@@ -5,7 +5,7 @@ then
     echo "Waiting for postgres..."
 
     while ! nc -z $BACKEND_POSTGRES_HOST $BACKEND_POSTGRES_CONTAINER_PORT; do
-      sleep 5
+      sleep 1
     done
 
     echo "PostgreSQL started"
