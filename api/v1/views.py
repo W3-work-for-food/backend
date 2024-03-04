@@ -1,11 +1,18 @@
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.v1.serializers import NotificationSerializer, UserSerializer
+from api.v1.serializers import NotificationSerializer
 from api.v1.utils import read_notifications_for_month
 from notifications.models import Notification
+
+from ambassadors.models import AmbassadorStatus, Content, Merch
+from .serializers import (
+    MerchSerializer,
+    UserSerializer, AmbassadorStatusSerializer,
+    ContentSerializer
+)
 
 
 @api_view(['GET', 'PATCH'])
@@ -66,9 +73,8 @@ def notification_list(request, status):
     return Response(serializer.data, 200)
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для пользователей"""
-
+class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для текущего пользователя"""
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
 
@@ -76,3 +82,24 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user:
             return [self.request.user]
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class AmbassadorStatusView(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для статусов амбассадоров"""
+
+    serializer_class = AmbassadorStatusSerializer
+    queryset = AmbassadorStatus.objects.all()
+
+
+class ContentViewSet(viewsets.ModelViewSet):
+    """Вьюсет для контента"""
+
+    serializer_class = ContentSerializer
+    queryset = Content.objects.all()
+
+
+class MerchViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для мерча"""
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = MerchSerializer
+    queryset = Merch.objects.all()

@@ -11,9 +11,29 @@ then
     echo "PostgreSQL started"
 fi
 
-python manage.py migrate --noinput
-python manage.py collectstatic --noinput
 
-gunicorn mvp_crm.wsgi:application --bind 0.0.0.0:8000 --reload
+echo "Running migrations..."
+python manage.py makemigrations --noinput \
+    && python manage.py migrate --noinput \
+    && echo "Migrations complited"
+
+echo "Collecting static files..."
+python manage.py collectstatic --noinput \
+    && echo "Static files collected"
+
+echo "Downloading data..."
+python manage.py download_data --noinput \
+    && echo "Download complited"
+
+
+echo "Creating superuser..."
+echo "from users.models import User; \
+      User.objects.filter(email='$EMAIL').delete(); \
+      User.objects.create_superuser('$LOGIN', '$EMAIL', '$PASSWORD')" \
+      | python manage.py shell \
+      && echo "Superuser created"
+
+echo "Starting gunicorn..." \
+    && gunicorn mvp_crm.wsgi:application --bind 0.0.0.0:8000 --reload
 
 exec "$@"

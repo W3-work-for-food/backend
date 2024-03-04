@@ -3,6 +3,8 @@ from rest_framework import serializers
 from notifications.models import Notification, NotificationStatus
 from users.models import User
 
+from ambassadors.models import AmbassadorStatus, Content, Merch
+
 
 class NotificationSerializer(serializers.ModelSerializer):
     """
@@ -40,3 +42,21 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
+
+
+class AmbassadorStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmbassadorStatus
+        fields = ['id', 'slug', 'status']
+
+
+class ContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Content
+        fields = ['id', 'link', 'date', 'guide_condition']
+
+
+class MerchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Merch
+        fields = ['merch_type', 'category', 'price']
