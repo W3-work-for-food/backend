@@ -1,9 +1,10 @@
 from rest_framework import status, viewsets
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.v1.serializers import NotificationSerializer, UserSerializer
+from api.v1.utils import read_notifications_for_month
 from notifications.models import Notification
 
 
@@ -49,13 +50,17 @@ def notification_list(request, status):
 
     notifications = Notification.objects.filter(status__status=status)
 
-    if type:
-        notifications = notifications.filter(type=type)
-
-    if date_from and date_to:
-        notifications = notifications.filter(
-            date__range=(date_from, date_to)
-        )
+    match status:
+        case 'Непрочитано':
+            if type:
+                notifications = notifications.filter(type=type)
+            if date_from and date_to:
+                notifications = notifications.filter(
+                    date__range=(date_from, date_to)
+                )
+        case 'Прочитано':
+            last_month_start, last_month_end = read_notifications_for_month()
+            notifications = notifications.filter(pub_date__range=(last_month_start, last_month_end))
 
     serializer = NotificationSerializer(notifications, many=True)
     return Response(serializer.data, 200)
