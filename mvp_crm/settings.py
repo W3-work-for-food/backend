@@ -68,13 +68,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mvp_crm.wsgi.application'
-DATABASES = {
+'''DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         },
-    }
-'''DATABASES = {
+    }'''
+DATABASES = {
     "default": {
         "ENGINE": os.getenv("BACKEND_POSTGRES_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("BACKEND_POSTGRES_DB", "db.sqlite3"),
@@ -83,7 +83,7 @@ DATABASES = {
         "HOST": os.getenv("BACKEND_POSTGRES_HOST", "localhost"),
         "PORT": os.getenv("BACKEND_POSTGRES_CONTAINER_PORT", "5432"),
     }
-}'''
+}
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
