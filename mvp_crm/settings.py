@@ -12,7 +12,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SECRET_KEY')
 
 DEBUG = bool(os.getenv('DEBUG_MODE', 'False').lower() in 'true')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
+ALLOWED_HOSTS = ['*']
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -28,6 +29,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # 'celery',
+    'corsheaders',
 ]
 
 PROJECT_APPS = [
@@ -40,6 +42,8 @@ PROJECT_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
+    #'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,13 +72,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mvp_crm.wsgi.application'
-'''DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         },
-    }'''
-DATABASES = {
+    }
+'''DATABASES = {
     "default": {
         "ENGINE": os.getenv("BACKEND_POSTGRES_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("BACKEND_POSTGRES_DB", "db.sqlite3"),
@@ -83,7 +87,7 @@ DATABASES = {
         "HOST": os.getenv("BACKEND_POSTGRES_HOST", "localhost"),
         "PORT": os.getenv("BACKEND_POSTGRES_CONTAINER_PORT", "5432"),
     }
-}
+}'''
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -136,3 +140,7 @@ SPECTACULAR_SETTINGS = {
     },
     'COMPONENT_SPLIT_REQUEST': True
 }
+'''CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:3000',
+]'''

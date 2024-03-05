@@ -3,7 +3,7 @@
     {"id": 2, "merch_type": "Кофе", "category": "None", "price":"800"},
     {"id": 3, "merch_type": "Стикеры", "category": "None", "price":"500"},
     {"id": 4, "merch_type": "Плюс", "category": "None", "price":"300"},
-    {"id": 5, "merch_type": "Арзамас", "category": "None", "price":"50000"},
+    {"id": 5, "merch_type": "Арзамас", "category": "None", "price":"30000"},
     {"id": 6, "merch_type": "Шоппер", "category": "None", "price":"1000"},
     {"id": 7, "merch_type": "Рюкзак", "category": "None", "price":"3000"},
     {"id": 8, "merch_type": "Сумка кросс", "category": "None", "price":"3500"},

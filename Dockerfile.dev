@@ -16,4 +16,14 @@ COPY ./start.sh ./
 RUN chmod +x $APP_HOME/start.sh
 
 COPY . $APP_HOME
-ENTRYPOINT ["./start.sh"]
+RUN  python manage.py makemigrations
+RUN  python manage.py migrate
+RUN  python manage.py download_data
+RUN python manage.py collectstatic
+RUN "from users.models import User; \
+      User.objects.filter(email='$EMAIL').delete(); \
+      User.objects.create_superuser('$LOGIN', '$EMAIL', '$PASSWORD')" \
+      | python manage.py shell \
+      && echo "Superuser created"
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mvp_crm.wsgi"]
+#ENTRYPOINT ["./start.sh"]

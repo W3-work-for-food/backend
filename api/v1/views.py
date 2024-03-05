@@ -1,22 +1,28 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import mixins, serializers, status, viewsets
+from rest_framework import mixins, serializers, status, viewsets, views
+from django.shortcuts import get_object_or_404
 
-from ambassadors.models import AmbassadorStatus, Content, Merch
+from ambassadors.models import AmbassadorStatus, Content, Merch, SentMerch, MerchBasket
 from .serializers import (
-    UserSerializer, MerchSerializer,
+    UserSerializer, MerchSerializer, MerchBasketSerializer,
     UserSerializer, AmbassadorStatusSerializer,
-    ContentSerializer
+    ContentSerializer, SentMerchSerializer,
+    CreateSentMerchSerializer,
 )
 
-class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
+
+class UserAPIView(views.APIView):
     """Вьюсет для текущего пользователя"""
     permission_classes = [IsAuthenticated,]
     serializer_class = UserSerializer
-
-    def get_queryset(self):
+    
+    def get(self, request, format=None):
         if self.request.user:
-            return [self.request.user]
+            serializer = UserSerializer(self.request.user)
+            return Response(
+                data=serializer.data, status=status.HTTP_200_OK
+            )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -33,8 +39,23 @@ class ContentViewSet(viewsets.ModelViewSet):
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
 
+
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для мерча"""
     permission_classes = [IsAuthenticated,]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
+
+
+class SentMerchViewSet(viewsets.ModelViewSet):
+    """Вьюсет для отправки мерча"""
+    permission_classes = [IsAuthenticated,]
+    serializer_class = SentMerchSerializer
+    queryset = SentMerch.objects.all()
+
+
+class MerchBasketViewSet(viewsets.ModelViewSet):
+    """Вьюсет для отправки мерча"""
+    permission_classes = [IsAuthenticated,]
+    serializer_class = MerchBasketSerializer
+    queryset = MerchBasket.objects.all()
