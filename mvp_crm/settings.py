@@ -140,7 +140,8 @@ SPECTACULAR_SETTINGS = {
     },
     'COMPONENT_SPLIT_REQUEST': True
 }
-'''CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://localhost:3000',
-]'''
+    'http://localhost:5432',
+]
