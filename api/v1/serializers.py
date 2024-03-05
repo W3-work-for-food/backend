@@ -63,7 +63,11 @@ class SentMerchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SentMerch
-        fields = ('id', 'user', 'date', 'ambassador', 'merch', 'amount', 'sized_merch', 'region_district')
+        fields = ('id', 'user', 'date',
+                  'ambassador', 'merch',
+                  'amount', 'sized_merch',
+                  'region_district'
+        )
 
 
     def get_sized_merch(self, obj):
