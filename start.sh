@@ -22,7 +22,7 @@ python manage.py collectstatic --noinput \
     && echo "Static files collected"
 
 echo "Downloading data..."
-python manage.py download_data --noinput \
+python manage.py download_data \
     && echo "Download complited"
 
 

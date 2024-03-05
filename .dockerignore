@@ -1,3 +1,8 @@
 .venv
 .git
 .gitignore
+.idea
+
+db.*
+
+requirements.txt
