@@ -33,7 +33,7 @@ class Merch(models.Model):
         max_length=50,
     )
     price = models.SmallIntegerField(
-        verbose_name='Стоимость мерча',
+        verbose_name='Стоимость единицы',
     )
 
     class Meta:
@@ -176,13 +176,6 @@ class Ambassador(models.Model):
     )
 
 
-class MerchBasket(models.Model):
-    """Корзина мерча к отправке"""
-    merch = models.ManyToManyField(
-        Merch,
-        verbose_name='Мерч',
-    )
-
 class SizedMerch(models.Model):
     merch = models.ForeignKey(
         Merch,
@@ -205,6 +198,7 @@ class SentMerch(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        blank=True,
         verbose_name='Менеджер',
     )
     ambassador = models.ForeignKey(
@@ -216,12 +210,15 @@ class SentMerch(models.Model):
         Merch,
         verbose_name='Мерч',
         blank=False,
+        related_name='merch'
     )
-    '''merch = models.ForeignKey(
-        Merch,
-        on_delete=models.CASCADE,
-        verbose_name='Мерч',
-    )'''
-    '''budget = models.PositiveSmallIntegerField(
-        verbose_name='Бюджет',
-    )'''
+    amount = models.PositiveIntegerField(
+        verbose_name='Стоимость',
+        blank=True,
+        null=True
+    )
+    region_district = models.CharField(
+        max_length=254,
+        verbose_name='Область/район',
+        blank=True, null=True
+    )

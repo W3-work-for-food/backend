@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import User
 
-from ambassadors.models import AmbassadorStatus, Content, Merch, SizedMerch, SentMerch, MerchBasket
+from ambassadors.models import Ambassador, AmbassadorStatus, Content, Merch, SizedMerch, SentMerch
 
 
 
@@ -50,25 +50,27 @@ class ContentSerializer(serializers.ModelSerializer):
 class MerchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merch
-        fields = ('id', 'merch_type', 'category', 'price')
+        fields = ('__all__')
+class AmbassadorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ambassador
+        fields = ('__all__')
 
 class SentMerchSerializer(serializers.ModelSerializer):
-    merch = MerchSerializer(many=True, read_only=True)
-    budget = serializers.SerializerMethodField()
+    merch = MerchSerializer(many=True)
     sized_merch = serializers.SerializerMethodField()
-    
+    ambassador = AmbassadorSerializer()
+
     class Meta:
         model = SentMerch
-        fields = ('id', 'user', 'ambassador', 'merch', 'budget', 'sized_merch')
+        fields = ('id', 'user', 'date', 'ambassador', 'merch', 'amount', 'sized_merch', 'region_district')
 
-    def get_budget(self, obj):
-        query = obj.merch.all()
-        budget = sum([merch.price for merch in query])
-        return budget
 
     def get_sized_merch(self, obj):
         query = obj.merch.all()
-        ambassador_profile = obj.ambassador.profile
+        ambassador = Ambassador.objects.get(id=obj.ambassador.id)
+        ambassador_profile = ambassador.profile
+
         result = []
         for merch in query:
             match merch.category:
@@ -81,25 +83,7 @@ class SentMerchSerializer(serializers.ModelSerializer):
             result.append(sized_merch)
         return result
 
-class CreateSentMerchSerializer(serializers.ModelSerializer):
-    #merch = MerchSerializer(many=True, read_only=True)
-    budget = serializers.SerializerMethodField()
-    sized_merch = serializers.SerializerMethodField()
-
-    class Meta:
-        model = SentMerch
-        fields = ('id', 'user', 'ambassador', 'merch', 'budget', 'sized_merch')
-
-class MerchBasketSerializer(serializers.ModelSerializer):
-    
-    merch = MerchSerializer(many=True, read_only=True)
-    budget = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = MerchBasket
-        fields = ('id', 'merch', 'budget')
-
-    def get_budget(self, obj):
-        query = obj.merch.all()
-        budget = sum([merch.price for merch in query])
-        return budget
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        del data['merch']
+        return data

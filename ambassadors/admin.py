@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ambassadors.models import Ambassador, Merch, AmbassadorStatus, Content, SentMerch, MerchBasket, Profile
+from ambassadors.models import Ambassador, Merch, AmbassadorStatus, Content, SentMerch, Profile
 
 
 @admin.register(AmbassadorStatus)
@@ -60,14 +60,9 @@ class SentMerchAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'ambassador'
-    )
-    empty_value_display = ' пусто '
-@admin.register(MerchBasket)
-class MerchBasketAdmin(admin.ModelAdmin):
-    """Отображение отправки мерча в админке."""
-    list_display = (
-        'id',
+        'ambassador',
+        'date',
+        'amount',
 
     )
     empty_value_display = ' пусто '

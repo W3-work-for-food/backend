@@ -12,8 +12,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SECRET_KEY')
 
 DEBUG = bool(os.getenv('DEBUG_MODE', 'False').lower() in 'true')
 
-#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -29,7 +28,6 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # 'celery',
-    'corsheaders',
 ]
 
 PROJECT_APPS = [
@@ -42,8 +40,6 @@ PROJECT_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
-    #'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,8 +136,3 @@ SPECTACULAR_SETTINGS = {
     },
     'COMPONENT_SPLIT_REQUEST': True
 }
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',
-    'http://localhost:3000',
-    'http://localhost:5432',
-]
