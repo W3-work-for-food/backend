@@ -1,17 +1,13 @@
 from rest_framework import serializers
 from users.models import User
 from ambassadors.models import (Ambassador, Promocode, Profile,
-                                Address, Merch, STATUS_CHOICES,
-                                GENDER_CHOICES, CLOTHING_SIZE_CHOICES, )
+                                Address, Merch, )
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Profile.
     """
-
-    # gender = serializers.ChoiceField(choices=GENDER_CHOICES)
-    # clothing_size = serializers.ChoiceField(choices=CLOTHING_SIZE_CHOICES)
 
     class Meta:
         model = Profile
@@ -46,8 +42,8 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
     Возвращает объекты модели Ambassadors.
     """
     promocodes = PromocodeSerializer(many=True, required=False)
-    address = AddressSerializer(many=False, required=False)
-    profile = ProfileSerializer(many=False, required=False)
+    address = AddressSerializer()
+    profile = ProfileSerializer()
 
     def get_promocodes(self, ambassador):
         promocodes = Promocode.objects.filter(ambassador_id=ambassador.id)
@@ -59,7 +55,7 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
         fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
                   'address', 'promocodes', 'comment', 'guide_status')
         read_only_fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                  'address', 'promocodes', 'comment', 'guide_status')
+                            'address', 'promocodes', 'comment', 'guide_status')
 
 
 class AmbassadorWriteSerializer(serializers.ModelSerializer):
@@ -67,8 +63,8 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
     Возвращает объекты модели Ambassadors.
     """
     promocodes = PromocodeSerializer(many=True, required=False)
-    address = AddressSerializer(many=False, required=False)
-    profile = ProfileSerializer(many=False, required=False)
+    address = AddressSerializer(many=False, required=True)
+    profile = ProfileSerializer(many=False, required=True)
 
     def create(self, validated_data):
         promocodes_data = validated_data.pop('promocodes')
@@ -88,17 +84,19 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             profile_id=profile.id,
             **validated_data
         )
-        promocodes = []
-        for code in promocodes_data:
-            promocode = Promocode.objects.create(
+
+        promocodes = [
+            Promocode.objects.create(
                 ambassador_id=ambassador.id,
-                **code
-            )
-            promocodes.append(promocode)
+                **promo_code
+            ) for promo_code in promocodes_data
+        ]
+
         ambassador_data = self.to_representation(ambassador)
         ambassador_data['promocodes'] = PromocodeSerializer(
             promocodes, many=True
         ).data
+
         return ambassador_data
 
     class Meta:

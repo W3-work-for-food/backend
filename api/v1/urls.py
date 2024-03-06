@@ -6,6 +6,7 @@ router_v1 = DefaultRouter()
 router_v1.register('getusers', GetUserViewSet, basename='getusers')
 router_v1.register('merch', MerchViewSet, basename='merch')
 router_v1.register('ambassadors', AmbassadorsViewSet, basename='ambassadors')
+
 urlpatterns = [
     path('', include(router_v1.urls))
 ]

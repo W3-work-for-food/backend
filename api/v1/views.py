@@ -1,22 +1,25 @@
 from datetime import datetime
 from http import HTTPMethod
 
-from rest_framework.decorators import action
+from drf_spectacular.utils import extend_schema
+from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import mixins, serializers, status, viewsets
+
+from ambassadors.models import Ambassador, Merch, Address, Profile, Promocode
 from .serializers import (
-    UserSerializer, AddressSerializer,
-    AmbassadorReadSerializer,
+    UserSerializer, AddressSerializer, AmbassadorReadSerializer,
     AmbassadorWriteSerializer, MerchSerializer, ProfileSerializer,
     PromocodeSerializer,
 )
-from ambassadors.models import Ambassador, Merch, Address, Profile, Promocode
+
+AMBASSADORS_DESCRIPTION = ('Ендпоинты для создания, изменения и просмотра '
+                           'амбассадоров')
 
 
 class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для текущего пользователя"""
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
 
     def get_queryset(self):
@@ -27,46 +30,47 @@ class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
 
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для мерча"""
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
 
 
 class AddressViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
 
 
 class PromocodeViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = PromocodeSerializer
     queryset = Promocode.objects.all()
 
 
+@extend_schema(tags=['Амбассадоры'], description=AMBASSADORS_DESCRIPTION)
 class AmbassadorsViewSet(
     viewsets.GenericViewSet,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
+    mixins.UpdateModelMixin
 ):
-    """
-    Вьюха для создания/просмотра амбассадоров
-    """
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'patch']
     permission_classes = [IsAuthenticated, ]
     queryset = Ambassador.objects.all()
 
     def get_serializer_class(self):
-        if self.request.method == HTTPMethod.POST:
-            return AmbassadorWriteSerializer
-        return AmbassadorReadSerializer
+        match self.request.method:
+            case HTTPMethod.GET:
+                return AmbassadorReadSerializer
+            case HTTPMethod.POST | HTTPMethod.PATCH:
+                return AmbassadorWriteSerializer
 
     def perform_create(self, serializer):
         serializer.save(pub_date=datetime.now())
