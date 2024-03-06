@@ -1,11 +1,7 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import User
 from ambassadors.models import (Ambassador, Promocode, Profile,
-                                Address, Merch, )
-
-
-from ambassadors.models import AmbassadorStatus, Content, Merch
+                                Address, AmbassadorStatus, Content, Merch)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
