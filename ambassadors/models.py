@@ -3,6 +3,7 @@ from django.db import models
 from users.models import User
 from ambassadors.validators import validate_tg_name
 
+
 # TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
     ('active', 'Активный'),
@@ -32,7 +33,7 @@ class Merch(models.Model):
         max_length=50,
     )
     price = models.SmallIntegerField(
-        verbose_name='Стоимость мерча',
+        verbose_name='Стоимость единицы',
     )
 
     class Meta:
@@ -48,18 +49,18 @@ class Notification(models.Model):
 
 
 class Profile(models.Model):
-    email = models.EmailField(unique=True, verbose_name='Email')
+    '''email = models.EmailField(unique=True, verbose_name='Email')
     gender = models.CharField(
         max_length=10, choices=GENDER_CHOICES, verbose_name='Пол'
     )
-    job = models.CharField(max_length=255, verbose_name='Работа')
+    job = models.CharField(max_length=255, verbose_name='Работа')'''
     clothing_size = models.CharField(
         max_length=11,
         choices=CLOTHING_SIZE_CHOICES,
         verbose_name='Размер одежды'
     )
     foot_size = models.IntegerField(verbose_name='Размер обуви')
-    blog_link = models.CharField(
+    '''blog_link = models.CharField(
         max_length=255,
         blank=True,
         null=True,
@@ -70,7 +71,7 @@ class Profile(models.Model):
         blank=True,
         null=True,
         verbose_name='Дополнительная информация')
-    education_path = models.TextField(verbose_name='Путь обучения')
+    education_path = models.TextField(verbose_name='Путь обучения')'''
 
 
 class Content(models.Model):
@@ -122,43 +123,48 @@ class Ambassador(models.Model):
         verbose_name='Телеграм'
     )
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    notification = models.ForeignKey(
-        Notification, on_delete=models.CASCADE, verbose_name='Уведомления'
-    )
+    '''notification = models.ForeignKey(
+        Notification, on_delete=models.CASCADE, verbose_name='Уведомления',
+        blank=True#
+    )'''
     onboarding_date = models.DateTimeField(verbose_name='Дата онбординга')
     profile = models.OneToOneField(
         Profile,
         on_delete=models.CASCADE,
-        verbose_name='Профиль'
+        verbose_name='Профиль',
+        blank=True#
     )
-    ambassador_status = models.ForeignKey(
+    '''ambassador_status = models.ForeignKey(
         AmbassadorStatus,
         on_delete=models.CASCADE,
-        verbose_name='Статус амбассадора'
-    )
-    ambassador_address = models.ForeignKey(
+        verbose_name='Статус амбассадора',
+        blank=True#
+    )'''
+    '''ambassador_address = models.ForeignKey(
         AmbassadorAddress,
         on_delete=models.CASCADE,
-        verbose_name='Адрес амбассадора'
-    )
-    content = models.ForeignKey(
+        verbose_name='Адрес амбассадора',
+        blank=True#
+    )'''
+    '''content = models.ForeignKey(
         Content,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         verbose_name='Контент'
-    )
-    merch = models.ForeignKey(
+    )'''
+    '''merch = models.ForeignKey(
         Merch,
         on_delete=models.CASCADE,
-        verbose_name='Мерч'
-    )
-    promocode = models.ForeignKey(
+        verbose_name='Мерч',
+        blank=True#
+    )'''
+    '''promocode = models.ForeignKey(
         Promocode,
         on_delete=models.CASCADE,
         blank=True,
         verbose_name='Промокод'
-    )
+    )'''
     comment = models.TextField(
         max_length=1024,
         blank=True,
@@ -170,10 +176,29 @@ class Ambassador(models.Model):
     )
 
 
-class MerchSent(models.Model):
+class SizedMerch(models.Model):
+    merch = models.ForeignKey(
+        Merch,
+        on_delete=models.CASCADE,
+        verbose_name='Мерч',
+    )
+    size = models.CharField(
+        max_length=11,
+        verbose_name='Размер мерча'
+    )
+
+class SentMerch(models.Model):
+    """Модель мерч в отправке"""
+    date = models.DateTimeField(
+        max_length=30,
+        auto_now_add=True,
+        unique=False,
+        blank=False
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        blank=True,
         verbose_name='Менеджер',
     )
     ambassador = models.ForeignKey(
@@ -181,11 +206,19 @@ class MerchSent(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Амбассадор',
     )
-    merch = models.ForeignKey(
+    merch = models.ManyToManyField(
         Merch,
-        on_delete=models.CASCADE,
         verbose_name='Мерч',
+        blank=False,
+        related_name='merch'
     )
-    budget = models.PositiveSmallIntegerField(
-        verbose_name='Бюджет',
+    amount = models.PositiveIntegerField(
+        verbose_name='Стоимость',
+        blank=True,
+        null=True
+    )
+    region_district = models.CharField(
+        max_length=254,
+        verbose_name='Область/район',
+        blank=True, null=True
     )
