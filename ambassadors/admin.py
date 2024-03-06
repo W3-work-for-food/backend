@@ -1,5 +1,7 @@
 from django.contrib import admin
-from ambassadors.models import Ambassador, Merch, Address, Promocode, Profile
+from ambassadors.models import (
+    Ambassador, Merch, Address, Promocode, Profile, AmbassadorStatus, Content
+)
 
 
 class PromocodeInline(admin.TabularInline):
@@ -47,6 +49,20 @@ class ProfileAdmin(admin.ModelAdmin):
     empty_value_display = ' пусто '
 
 
+@admin.register(AmbassadorStatus)
+class AmbassadorStatusAdmin(admin.ModelAdmin):
+    list_display = ('id', 'slug', 'status')
+    search_fields = ('slug', 'status')
+    list_filter = ('status',)
+
+
+@admin.register(Content)
+class ContentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'link', 'date', 'guide_condition')
+    search_fields = ('link',)
+    list_filter = ('guide_condition',)
+
+
 @admin.register(Ambassador)
 class AmbassadorAdmin(admin.ModelAdmin):
     inlines = [
@@ -81,10 +97,10 @@ class AmbassadorAdmin(admin.ModelAdmin):
 @admin.register(Merch)
 class MerchAdmin(admin.ModelAdmin):
     """Отображение мерча в админке."""
-    list_display = [
+    list_display = (
         'id',
         'merch_type',
         'category',
         'price'
-    ]
+    )
     empty_value_display = ' пусто '

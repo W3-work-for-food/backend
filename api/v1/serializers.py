@@ -1,7 +1,11 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from users.models import User
 from ambassadors.models import (Ambassador, Promocode, Profile,
                                 Address, Merch, )
+
+
+from ambassadors.models import AmbassadorStatus, Content, Merch
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -133,6 +137,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
+
+
+class AmbassadorStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmbassadorStatus
+        fields = ['id', 'slug', 'status']
+
+
+class ContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Content
+        fields = ['id', 'link', 'date', 'guide_condition']
 
 
 class MerchSerializer(serializers.ModelSerializer):

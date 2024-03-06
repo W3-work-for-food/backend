@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import models
 from users.models import User
 from ambassadors.validators import validate_tg_name
 
@@ -80,12 +81,23 @@ class Profile(models.Model):
         verbose_name_plural = 'Профили амбассадоров'
 
 
-# class Content(models.Model):
-#     pass
+class Content(models.Model):
+    link = models.URLField(max_length=255, unique=False, blank=False)
+    date = models.DateTimeField(
+        max_length=30,
+        auto_now_add=True,
+        unique=False,
+        blank=False
+    )
+    guide_condition = models.BooleanField(unique=False, blank=False)
 
 
-# class Status(models.Model):
-#     pass
+class AmbassadorStatus(models.Model):
+    slug = models.SlugField(max_length=255, unique=True)
+    status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.status
 
 
 class Address(models.Model):
@@ -103,7 +115,6 @@ class Address(models.Model):
 
 class Ambassador(models.Model):
     pub_date = models.DateTimeField(
-        # auto_now_add=True,
         verbose_name='Дата добавления амбассадора'
     )
     telegram = models.CharField(
@@ -133,8 +144,6 @@ class Ambassador(models.Model):
         Address,
         on_delete=models.CASCADE,
         related_name='ambassador',
-        blank=True,
-        null=True,
         verbose_name='Адрес амбассадора'
     )
     # content = models.ForeignKey(
