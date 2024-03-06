@@ -55,7 +55,7 @@ class SentMerchViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         user = self.request.user
         ambassador_id = request.data['ambassador']
-        ambassador = Ambassador(id=ambassador_id)
+        ambassador = get_object_or_404(Ambassador, id=ambassador_id)
         merch_id_list = request.data['merch']
         
         sent_merch = SentMerch.objects.create(user=user, ambassador=ambassador)
@@ -76,10 +76,12 @@ class SentMerchViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=['get'],
+        methods=['post'],
     )
     def budget(self, obj):
         """Расчет бюджета на мерч"""
-        sent_merch_query = SentMerch.objects.all()
+        ambassador_id = self.request.data['ambassador']
+        sent_merch_query = SentMerch.objects.filter(ambassador=ambassador_id)
         budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
         return Response({'budget':budget}, status=status.HTTP_200_OK)
+

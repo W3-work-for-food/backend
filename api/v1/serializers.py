@@ -60,6 +60,7 @@ class SentMerchSerializer(serializers.ModelSerializer):
     merch = MerchSerializer(many=True)
     sized_merch = serializers.SerializerMethodField()
     ambassador = AmbassadorSerializer()
+    user = UserSerializer()
 
     class Meta:
         model = SentMerch
@@ -83,7 +84,7 @@ class SentMerchSerializer(serializers.ModelSerializer):
                 case 'socks':
                     sized_merch = (merch.merch_type, ambassador_profile.foot_size)
                 case _:
-                    sized_merch = (merch.merch_type,)
+                    sized_merch = (merch.merch_type, None)
             result.append(sized_merch)
         return result
 
