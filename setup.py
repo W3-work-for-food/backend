@@ -7,7 +7,6 @@ requires = [
     'python-dotenv==1.0.1',
     'djangorestframework==3.14.0',
     'drf-spectacular==0.27.1',
-    'django-cors-headers',
     # 'uuid==1.30',
 ]
 
