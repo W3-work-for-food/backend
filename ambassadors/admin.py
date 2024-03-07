@@ -1,8 +1,7 @@
 from django.contrib import admin
-from ambassadors.models import (
-    Ambassador, Merch, Address, Promocode, Profile, AmbassadorStatus, Content
-)
-from ambassadors.models import Ambassador, Merch, AmbassadorStatus, Content, SentMerch, Profile
+
+from ambassadors.models import (Ambassador, Merch, AmbassadorStatus, Content,
+                                SentMerch, Profile, Address, Promocode)
 
 
 class PromocodeInline(admin.TabularInline):
@@ -50,7 +49,6 @@ class ProfileAdmin(admin.ModelAdmin):
     empty_value_display = ' пусто '
 
 
-
 @admin.register(AmbassadorStatus)
 class AmbassadorStatusAdmin(admin.ModelAdmin):
     list_display = ('id', 'slug', 'status')
@@ -91,7 +89,6 @@ class AmbassadorAdmin(admin.ModelAdmin):
          'guide_status'
     )
 
-
     def promocodes(self, obj):
         return obj.promocodes.all()
 
@@ -108,6 +105,7 @@ class MerchAdmin(admin.ModelAdmin):
         'price'
     )
     empty_value_display = ' пусто '
+
 
 @admin.register(SentMerch)
 class SentMerchAdmin(admin.ModelAdmin):

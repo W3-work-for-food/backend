@@ -1,8 +1,7 @@
 from django.db import models
-from django.db import models
-from users.models import User
-from ambassadors.validators import validate_tg_name
 
+from ambassadors.validators import validate_tg_name, validate_promo_code
+from users.models import User
 
 # TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
@@ -118,7 +117,8 @@ class Address(models.Model):
         max_length=255,
         blank=True,
         null=True,
-        verbose_name='Район, область')
+        verbose_name='Район, область'
+    )
     city = models.CharField(max_length=255, verbose_name='Город')
     address = models.CharField(max_length=255, verbose_name='Адрес')
     postal_code = models.PositiveSmallIntegerField(
@@ -164,6 +164,7 @@ class Ambassador(models.Model):
         related_name='ambassador',
         verbose_name='Адрес амбассадора'
     )
+
     content = models.OneToOneField(
         Content,
         on_delete=models.CASCADE,
@@ -171,6 +172,7 @@ class Ambassador(models.Model):
         blank=True,
         verbose_name='Контент'
     )
+
     comment = models.TextField(
         max_length=1024,
         blank=True,
@@ -193,7 +195,11 @@ class Promocode(models.Model):
         related_name='promocodes',
         verbose_name='Промокод'
     )
-    promocode = models.CharField(max_length=255, verbose_name='Промокод')
+    promocode = models.CharField(
+        max_length=255,
+        validators=[validate_promo_code],
+        verbose_name='Промокод'
+    )
     is_active = models.BooleanField(verbose_name='Статус')
 
     class Meta:
@@ -235,3 +241,4 @@ class SentMerch(models.Model):
     class Meta:
         verbose_name = 'Мерч в отправке'
         verbose_name_plural = 'Мерч в отправке'
+

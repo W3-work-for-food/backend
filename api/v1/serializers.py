@@ -1,25 +1,24 @@
 from django.db.models import Q
 from rest_framework import serializers
 from users.models import User
+
+
+from ambassadors.models import (Ambassador, AmbassadorStatus, Content, Merch,
+                                SentMerch, Profile, Address, Promocode)
+
+ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
+
 from ambassadors.models import (Ambassador, Promocode, Profile,
                                 Address, AmbassadorStatus, Content, Merch)
 from ambassadors.models import Ambassador, AmbassadorStatus, Content, Merch, SentMerch
 from notifications.models import Notification, NotificationStatus
 
 
+
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Profile.
     """
-    email = serializers.EmailField()
-
-# TODO Надо доделать валидацию почты. Должен смотреть в базе и исключать текущего амба из неё
-#     def validate_email(self, email):
-#         if Ambassador.objects.filter(profile__email=email).exclude(id=self.instance.id).exists():
-#             raise serializers.ValidationError(
-#                 f'Пользователь с почтой {email} уже существует'
-#             )
-#         return email
 
     class Meta:
         model = Profile
@@ -81,6 +80,21 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
     address = AddressSerializer(required=True, partial=True)
     profile = ProfileSerializer(required=True, partial=True)
 
+    def validate_profile(self, attrs):
+        ambassador_id = self.instance.id if self.instance else None
+        email = attrs.get('email')
+
+        if ambassador_id:
+            if Ambassador.objects.filter(profile__email=email).exclude(
+                    id=ambassador_id
+            ).exists():
+                raise serializers.ValidationError(ERR_EMAIL_MSG.format(email))
+            return attrs
+
+        if Ambassador.objects.filter(profile__email=email).exists():
+            raise serializers.ValidationError(ERR_EMAIL_MSG.format(email))
+        return attrs
+
     def create(self, validated_data):
         promocodes_data = validated_data.pop('promocodes')
         address_data = validated_data.pop('address')
@@ -95,8 +109,8 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             profile = profile_serializer.save()
 
         ambassador = Ambassador.objects.create(
-            address_id=address.id,
-            profile_id=profile.id,
+            address_id=address.id,  # NOQA
+            profile_id=profile.id,  # NOQA
             **validated_data
         )
 
@@ -135,18 +149,18 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
                 setattr(profile, key, value)
             profile.save()
 
-        new_codes = validated_data.get('promocodes')
-        if new_codes:
-            for code in new_codes:
-                existing_promocode = Promocode.objects.filter(
+        new_promo_codes = validated_data.get('promocodes')
+        if new_promo_codes:
+            for code_obj in new_promo_codes:
+                existing_promo_code = Promocode.objects.filter(
                     Q(ambassador_id=instance.id) &
-                    Q(promocode=code['promocode'])
+                    Q(promocode=code_obj['promocode'])
                 ).first()
-                if existing_promocode:
-                    existing_promocode.is_active = code['is_active']
-                    existing_promocode.save()
+                if existing_promo_code:
+                    existing_promo_code.is_active = code_obj['is_active']
+                    existing_promo_code.save()
                 else:
-                    Promocode(ambassador_id=instance.id, **code).save()
+                    Promocode(ambassador_id=instance.id, **code_obj).save()
         else:
             Promocode.objects.filter(ambassador_id=instance.id).delete()
         instance.save()
@@ -235,11 +249,14 @@ class ContentSerializer(serializers.ModelSerializer):
 class MerchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merch
-        fields = ('__all__')
+        fields = '__all__'
+
+
 class AmbassadorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ambassador
-        fields = ('__all__')
+        fields = '__all__'
+
 
 class SentMerchSerializer(serializers.ModelSerializer):
     merch = MerchSerializer(many=True)
@@ -252,7 +269,9 @@ class SentMerchSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'date',
                   'ambassador', 'merch',
                   'amount', 'sized_merch',
-        )
+
+                  'region_district'
+                  )
 
 
     def get_sized_merch(self, obj):
@@ -264,9 +283,13 @@ class SentMerchSerializer(serializers.ModelSerializer):
         for merch in query:
             match merch.category:
                 case 'outerwear':
-                    sized_merch = (merch.merch_type, ambassador_profile.clothing_size)
+                    sized_merch = (
+                        merch.merch_type, ambassador_profile.clothing_size
+                    )
                 case 'socks':
-                    sized_merch = (merch.merch_type, ambassador_profile.foot_size)
+                    sized_merch = (
+                        merch.merch_type, ambassador_profile.foot_size
+                    )
                 case _:
                     sized_merch = (merch.merch_type, None)
             result.append(sized_merch)
