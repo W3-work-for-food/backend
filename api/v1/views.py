@@ -6,8 +6,9 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ambassadors.models import Ambassador, Merch, Address, Profile, Promocode, AmbassadorStatus, Content
-from .serializers import (
+from ambassadors.models import (Ambassador, Merch, Address, Profile, Promocode,
+                                AmbassadorStatus, Content)
+from api.v1.serializers import (
     UserSerializer, AddressSerializer, AmbassadorReadSerializer,
     AmbassadorWriteSerializer, MerchSerializer, ProfileSerializer,
     PromocodeSerializer, AmbassadorStatusSerializer, ContentSerializer
@@ -40,6 +41,7 @@ class ContentViewSet(viewsets.ModelViewSet):
 
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
+
 
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для мерча"""

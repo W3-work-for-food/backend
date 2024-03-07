@@ -49,7 +49,7 @@ class Merch(models.Model):
 
 
 class Profile(models.Model):
-    email = models.EmailField(unique=True, verbose_name='Email')
+    email = models.EmailField(max_length=255, verbose_name='Email')
     gender = models.CharField(
         max_length=10, choices=GENDER_CHOICES, verbose_name='Пол'
     )
@@ -60,7 +60,7 @@ class Profile(models.Model):
         verbose_name='Размер одежды'
     )
     foot_size = models.IntegerField(verbose_name='Размер обуви')
-    blog_link = models.CharField(
+    blog_link = models.URLField(
         max_length=255,
         blank=True,
         null=True,
@@ -102,6 +102,11 @@ class AmbassadorStatus(models.Model):
 
 class Address(models.Model):
     country = models.CharField(max_length=255, verbose_name='Страна')
+    region = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Район, область')
     city = models.CharField(max_length=255, verbose_name='Город')
     address = models.CharField(max_length=255, verbose_name='Адрес')
     postal_code = models.PositiveSmallIntegerField(

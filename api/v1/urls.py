@@ -1,7 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (GetUserViewSet, AmbassadorsViewSet, MerchViewSet, \
-    ContentViewSet, AmbassadorStatusView)
+from .views import (
+    GetUserViewSet, AmbassadorsViewSet, MerchViewSet, ContentViewSet,
+    AmbassadorStatusView
+)
 
 router_v1 = DefaultRouter()
 router_v1.register('getusers', GetUserViewSet, basename='getusers')
