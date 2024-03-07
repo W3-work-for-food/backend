@@ -2,10 +2,17 @@ from django.db.models import Q
 from rest_framework import serializers
 from users.models import User
 
+
 from ambassadors.models import (Ambassador, AmbassadorStatus, Content, Merch,
                                 SentMerch, Profile, Address, Promocode)
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
+
+from ambassadors.models import (Ambassador, Promocode, Profile,
+                                Address, AmbassadorStatus, Content, Merch)
+from ambassadors.models import Ambassador, AmbassadorStatus, Content, Merch, SentMerch
+from notifications.models import Notification, NotificationStatus
+
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -55,6 +62,8 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
         serializer = PromocodeSerializer(promocodes, many=True)
         return serializer.data
 
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
     class Meta:
         model = Ambassador
         fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
@@ -165,6 +174,37 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'pub_date')
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели уведомлений.
+    Attributes:
+        type (str): Тип уведомления.
+        status (str): Статус уведомления.
+        ambassador (str): Имя посла, связанного с уведомлением.
+    Methods:
+        update(instance, validated_data): Обновляет уведомление.
+    Meta:
+        model (Notification): Связанная модель уведомлений.
+        fields (list): Список полей, включаемых в сериализацию.
+        read_only_fields (list): Список полей, доступных только для чтения.
+    """
+    type = serializers.StringRelatedField()
+    status = serializers.SlugRelatedField(slug_field='status', queryset=NotificationStatus.objects.all())
+    ambassador = serializers.StringRelatedField()
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
+        read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
+
+    def update(self, instance, validated_data):
+        status_data = validated_data.pop('status', None)
+        if status_data is not None:
+            status_obj = NotificationStatus.objects.get(status=status_data)
+            instance.status = status_obj
+        instance.save()
+        return instance
+
 # class NotificationStatusSerializer(serializers.ModelSerializer):
 #     """Возвращает объекты модели StatusIDP"""
 #
@@ -229,8 +269,10 @@ class SentMerchSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'date',
                   'ambassador', 'merch',
                   'amount', 'sized_merch',
+
                   'region_district'
                   )
+
 
     def get_sized_merch(self, obj):
         query = obj.merch.all()

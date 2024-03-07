@@ -46,10 +46,6 @@ class Merch(models.Model):
         return f'{self.merch_type}'
 
 
-# class Notification(models.Model):
-#     pass
-
-
 class Profile(models.Model):
 
     email = models.EmailField(max_length=255, verbose_name='Email')
@@ -89,6 +85,7 @@ class Profile(models.Model):
 
 
 class Content(models.Model):
+    """Модель контента"""
     link = models.URLField(max_length=255, unique=False, blank=False)
     date = models.DateTimeField(
         max_length=30,
@@ -98,10 +95,17 @@ class Content(models.Model):
     )
     guide_condition = models.BooleanField(unique=False, blank=False)
 
+    class Meta:
+        verbose_name = 'Контент'
+        verbose_name_plural = 'Контент'
 
 class AmbassadorStatus(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     status = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name = 'Статус амбассадора'
+        verbose_name_plural = 'Статусы амбассадора'
 
     def __str__(self):
         return self.status
@@ -149,29 +153,25 @@ class Ambassador(models.Model):
         related_name='ambassador',
         verbose_name='Профиль'
     )
-    # status = models.ForeignKey(
-    #     AmbassadorStatus,
-    #     on_delete=models.CASCADE,
-    #     verbose_name='Статус амбассадора'
-    # )
+    status = models.ForeignKey(
+        AmbassadorStatus,
+        on_delete=models.CASCADE,
+        verbose_name='Статус амбассадора'
+    )
     address = models.ForeignKey(
         Address,
         on_delete=models.CASCADE,
         related_name='ambassador',
         verbose_name='Адрес амбассадора'
     )
-    # content = models.ForeignKey(
-    #     Content,
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name='Контент'
-    # )
-    # merch = models.ForeignKey(
-    #     Merch,
-    #     on_delete=models.CASCADE,
-    #     verbose_name='Мерч'
-    # )
+
+    content = models.OneToOneField(
+        Content,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name='Контент'
+    )
 
     comment = models.TextField(
         max_length=1024,
@@ -207,18 +207,6 @@ class Promocode(models.Model):
         verbose_name_plural = 'Промокоды'
 
 
-class SizedMerch(models.Model):
-    merch = models.ForeignKey(
-        Merch,
-        on_delete=models.CASCADE,
-        verbose_name='Мерч',
-    )
-    size = models.CharField(
-        max_length=11,
-        verbose_name='Размер мерча'
-    )
-
-
 class SentMerch(models.Model):
     """Модель мерч в отправке"""
     date = models.DateTimeField(
@@ -250,12 +238,7 @@ class SentMerch(models.Model):
         null=True
     )
 
-    budget = models.PositiveIntegerField(
-        verbose_name='Бюджет'
-    )
-    region_district = models.CharField(
-        max_length=254,
-        verbose_name='Область/район',
-        blank=True,
-        null=True
-    )
+    class Meta:
+        verbose_name = 'Мерч в отправке'
+        verbose_name_plural = 'Мерч в отправке'
+

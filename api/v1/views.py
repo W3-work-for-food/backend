@@ -12,6 +12,11 @@ from ambassadors.models import (
     Ambassador, Merch, Address, Profile, Promocode, AmbassadorStatus,
     Content, SentMerch
 )
+
+from notifications.models import Notification
+from ambassadors.models import (Ambassador, Merch, Address, Profile, Promocode,
+                                AmbassadorStatus, Content)
+
 from api.v1.serializers import (
     UserSerializer, AddressSerializer, AmbassadorReadSerializer,
     AmbassadorWriteSerializer, MerchSerializer, ProfileSerializer,
@@ -21,6 +26,9 @@ from api.v1.serializers import (
 
 AMBASSADORS_DESCRIPTION = ('Эндпоинты для создания, изменения и просмотра '
                            'амбассадоров')
+MERCH_DESCRIPTION = ('Эндпоинты для создания и просмотра отправки мерча и'
+                        'просмотра мерча и ')
+CONTENT_DESCRIPTION = ('Эндпоинты для создания и просмотра контента')
 
 
 class UserAPIView(views.APIView):
@@ -36,7 +44,7 @@ class UserAPIView(views.APIView):
             )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
+@extend_schema(tags=['Амбассадоры'], description=AMBASSADORS_DESCRIPTION)
 class AmbassadorStatusView(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для статусов амбассадоров"""
 
@@ -44,13 +52,14 @@ class AmbassadorStatusView(viewsets.ReadOnlyModelViewSet):
     queryset = AmbassadorStatus.objects.all()
 
 
+@extend_schema(tags=['Контент'], description=CONTENT_DESCRIPTION)
 class ContentViewSet(viewsets.ModelViewSet):
     """Вьюсет для контента"""
 
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
 
-
+@extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для мерча"""
     permission_classes = [IsAuthenticated, ]
@@ -99,6 +108,7 @@ class AmbassadorsViewSet(
         serializer.save(pub_date=datetime.now())
 
 
+@extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)
 class SentMerchViewSet(viewsets.ModelViewSet):
     """Вьюсет для отправки мерча"""
     permission_classes = [IsAuthenticated, ]
@@ -120,8 +130,6 @@ class SentMerchViewSet(viewsets.ModelViewSet):
             lst.append(merch.id)
         sent_merch.merch.set(lst)
         sent_merch.amount = amount
-        if 'region_district' in request.data:
-            sent_merch.region_district = request.data['region_district']
         sent_merch.save()
         serializer = SentMerchSerializer(sent_merch)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)

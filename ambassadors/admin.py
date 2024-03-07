@@ -63,11 +63,6 @@ class ContentAdmin(admin.ModelAdmin):
     list_filter = ('guide_condition',)
 
 
-@admin.register(Profile)
-class AmbassadorAdmin(admin.ModelAdmin):
-    list_display = ('clothing_size', 'foot_size')
-
-
 @admin.register(Ambassador)
 class AmbassadorAdmin(admin.ModelAdmin):
     inlines = [
@@ -120,7 +115,7 @@ class SentMerchAdmin(admin.ModelAdmin):
         'user',
         'ambassador',
         'date',
-        'amount',
+
 
     )
-    empty_value_display = ' пусто '
+
