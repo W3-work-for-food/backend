@@ -1,4 +1,9 @@
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from datetime import datetime
+from http import HTTPMethod
+
+from drf_spectacular.utils import extend_schema
+from rest_framework import mixins, status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import mixins, serializers, status, viewsets, views
 from django.shortcuts import get_object_or_404
@@ -9,11 +14,22 @@ from .serializers import (
     UserSerializer, AmbassadorStatusSerializer,
     ContentSerializer, SentMerchSerializer,
 )
+from ambassadors.models import (Ambassador, Merch, Address, Profile, Promocode,
+                                AmbassadorStatus, Content)
+from api.v1.serializers import (
+    UserSerializer, AddressSerializer, AmbassadorReadSerializer,
+    AmbassadorWriteSerializer, MerchSerializer, ProfileSerializer,
+    PromocodeSerializer, AmbassadorStatusSerializer, ContentSerializer
+)
+
+AMBASSADORS_DESCRIPTION = ('Эндпоинты для создания, изменения и просмотра '
+                           'амбассадоров')
+
 
 
 class UserAPIView(views.APIView):
-    """Вьюсет для текущего пользователя"""
-    permission_classes = [IsAuthenticated,]
+    """Апивью для возврата текущего пользователя"""
+    permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
     
     def get(self, request, format=None):
@@ -41,10 +57,51 @@ class ContentViewSet(viewsets.ModelViewSet):
 
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для мерча"""
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
 
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = AddressSerializer
+    queryset = Address.objects.all()
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+
+class PromocodeViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = PromocodeSerializer
+    queryset = Promocode.objects.all()
+
+
+@extend_schema(tags=['Амбассадоры'], description=AMBASSADORS_DESCRIPTION)
+class AmbassadorsViewSet(
+    viewsets.GenericViewSet,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin
+):
+    http_method_names = ['get', 'post', 'patch']
+    permission_classes = [IsAuthenticated, ]
+    queryset = Ambassador.objects.all()
+
+    def get_serializer_class(self):
+        match self.request.method:
+            case HTTPMethod.GET:
+                return AmbassadorReadSerializer
+            case HTTPMethod.POST | HTTPMethod.PATCH:
+                return AmbassadorWriteSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(pub_date=datetime.now())
 
 class SentMerchViewSet(viewsets.ModelViewSet):
     """Вьюсет для отправки мерча"""
@@ -84,4 +141,3 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         sent_merch_query = SentMerch.objects.filter(ambassador=ambassador_id)
         budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
         return Response({'budget':budget}, status=status.HTTP_200_OK)
-

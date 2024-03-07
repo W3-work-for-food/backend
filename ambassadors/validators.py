@@ -3,9 +3,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-TGNAME_ERROR = ('Имя пользователя должно состоять из латинских букв,'
-                ' цифр и символа нижнего подчеркивания, и быть длиной'
-                ' от 5 до 32 символов')
+TGNAME_ERROR = ('Имя пользователя должно начинать с символа "@" и состоять из'
+                ' латинских букв, цифр и символа нижнего подчеркивания, и быть'
+                ' длиной от 5 до 32 символов')
 
 
 def validate_tg_name(value):

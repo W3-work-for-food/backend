@@ -12,8 +12,10 @@ WORKDIR $APP_HOME
 COPY ./setup.py ./
 RUN pip install -e ./
 
-COPY ./start.sh ./
+COPY . $APP_HOME
+
 RUN chmod +x $APP_HOME/start.sh
+
 
 COPY . $APP_HOME
 RUN  python manage.py makemigrations
