@@ -1,7 +1,7 @@
 import re
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
 
 TG_NAME_ERROR = ('Имя пользователя должно начинать с символа "@" и состоять из'
                 ' латинских букв, цифр и символа нижнего подчеркивания, и быть'

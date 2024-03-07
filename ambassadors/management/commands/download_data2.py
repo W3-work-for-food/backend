@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand
 import json
-from ambassadors.models import Merch, AmbassadorStatus
-from users.models import User 
+
+from django.core.management.base import BaseCommand
+
+from users.models import User
+
 
 def clear_data(self):
     User.objects.all().delete()
