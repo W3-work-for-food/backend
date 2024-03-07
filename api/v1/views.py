@@ -173,7 +173,7 @@ def notification_list(request, status):
     date_from = request.query_params.get('pub_date')
     date_to = request.query_params.get('pub_date')
 
-    notifications = Notification.objects.filter(status__status=status)
+    notifications = Notification.objects.filter(status=status)
 
     match status:
         case 'Непрочитано':
