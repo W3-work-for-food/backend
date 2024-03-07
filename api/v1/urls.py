@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from api.v1.views import (
     AmbassadorsViewSet, MerchViewSet, ContentViewSet,
     AmbassadorStatusView, UserAPIView, SentMerchViewSet
-
+)
 from .views import (
     AmbassadorsViewSet, MerchViewSet, ContentViewSet,
     AmbassadorStatusView
