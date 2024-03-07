@@ -1,9 +1,9 @@
 from django.db.models import Q
 from rest_framework import serializers
 from users.models import User
-from ambassadors.models import (Ambassador, Promocode, Profile,
-                                Address, AmbassadorStatus, Content, Merch)
-from ambassadors.models import Ambassador, AmbassadorStatus, Content, Merch, SizedMerch, SentMerch
+
+from ambassadors.models import (Ambassador, AmbassadorStatus, Content, Merch,
+                                SentMerch, Profile, Address, Promocode)
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
 
@@ -100,8 +100,8 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             profile = profile_serializer.save()
 
         ambassador = Ambassador.objects.create(
-            address_id=address.id, # NOQA
-            profile_id=profile.id, # NOQA
+            address_id=address.id,  # NOQA
+            profile_id=profile.id,  # NOQA
             **validated_data
         )
 
@@ -209,11 +209,14 @@ class ContentSerializer(serializers.ModelSerializer):
 class MerchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merch
-        fields = ('__all__')
+        fields = '__all__'
+
+
 class AmbassadorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ambassador
-        fields = ('__all__')
+        fields = '__all__'
+
 
 class SentMerchSerializer(serializers.ModelSerializer):
     merch = MerchSerializer(many=True)
@@ -227,8 +230,7 @@ class SentMerchSerializer(serializers.ModelSerializer):
                   'ambassador', 'merch',
                   'amount', 'sized_merch',
                   'region_district'
-        )
-
+                  )
 
     def get_sized_merch(self, obj):
         query = obj.merch.all()
@@ -239,9 +241,13 @@ class SentMerchSerializer(serializers.ModelSerializer):
         for merch in query:
             match merch.category:
                 case 'outerwear':
-                    sized_merch = (merch.merch_type, ambassador_profile.clothing_size)
+                    sized_merch = (
+                        merch.merch_type, ambassador_profile.clothing_size
+                    )
                 case 'socks':
-                    sized_merch = (merch.merch_type, ambassador_profile.foot_size)
+                    sized_merch = (
+                        merch.merch_type, ambassador_profile.foot_size
+                    )
                 case _:
                     sized_merch = (merch.merch_type, None)
             result.append(sized_merch)

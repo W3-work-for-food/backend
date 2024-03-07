@@ -1,8 +1,7 @@
 from django.db import models
-from django.db import models
-from users.models import User
-from ambassadors.validators import validate_tg_name
 
+from ambassadors.validators import validate_tg_name, validate_promo_code
+from users.models import User
 
 # TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
@@ -58,7 +57,7 @@ class Profile(models.Model):
     gender = models.CharField(
         max_length=10, choices=GENDER_CHOICES, verbose_name='Пол'
     )
-    job = models.CharField(max_length=255, verbose_name='Работа')'''
+    job = models.CharField(max_length=255, verbose_name='Работа')
     clothing_size = models.CharField(
         max_length=11,
         choices=CLOTHING_SIZE_CHOICES,
@@ -89,7 +88,6 @@ class Profile(models.Model):
         verbose_name_plural = 'Профили амбассадоров'
 
 
-
 class Content(models.Model):
     link = models.URLField(max_length=255, unique=False, blank=False)
     date = models.DateTimeField(
@@ -115,7 +113,8 @@ class Address(models.Model):
         max_length=255,
         blank=True,
         null=True,
-        verbose_name='Район, область')
+        verbose_name='Район, область'
+    )
     city = models.CharField(max_length=255, verbose_name='Город')
     address = models.CharField(max_length=255, verbose_name='Адрес')
     postal_code = models.PositiveSmallIntegerField(
@@ -174,7 +173,6 @@ class Ambassador(models.Model):
     #     verbose_name='Мерч'
     # )
 
-
     comment = models.TextField(
         max_length=1024,
         blank=True,
@@ -197,7 +195,11 @@ class Promocode(models.Model):
         related_name='promocodes',
         verbose_name='Промокод'
     )
-    promocode = models.CharField(max_length=255, verbose_name='Промокод')
+    promocode = models.CharField(
+        max_length=255,
+        validators=[validate_promo_code],
+        verbose_name='Промокод'
+    )
     is_active = models.BooleanField(verbose_name='Статус')
 
     class Meta:
@@ -215,6 +217,7 @@ class SizedMerch(models.Model):
         max_length=11,
         verbose_name='Размер мерча'
     )
+
 
 class SentMerch(models.Model):
     """Модель мерч в отправке"""
@@ -248,11 +251,11 @@ class SentMerch(models.Model):
     )
 
     budget = models.PositiveIntegerField(
-        verbose_name='Бюджет',
-
+        verbose_name='Бюджет'
+    )
     region_district = models.CharField(
         max_length=254,
         verbose_name='Область/район',
-        blank=True, null=True
-
+        blank=True,
+        null=True
     )
