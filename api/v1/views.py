@@ -5,7 +5,15 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from rest_framework import mixins, serializers, status, viewsets, views
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+from ambassadors.models import Ambassador, AmbassadorStatus, Content, Merch, SentMerch
+from .serializers import (
+    UserSerializer, MerchSerializer, 
+    UserSerializer, AmbassadorStatusSerializer,
+    ContentSerializer, SentMerchSerializer,
+)
 from ambassadors.models import (Ambassador, Merch, Address, Profile, Promocode,
                                 AmbassadorStatus, Content)
 from api.v1.serializers import (
@@ -14,18 +22,22 @@ from api.v1.serializers import (
     PromocodeSerializer, AmbassadorStatusSerializer, ContentSerializer
 )
 
-AMBASSADORS_DESCRIPTION = ('Ендпоинты для создания, изменения и просмотра '
+AMBASSADORS_DESCRIPTION = ('Эндпоинты для создания, изменения и просмотра '
                            'амбассадоров')
 
 
-class GetUserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для текущего пользователя"""
+
+class UserAPIView(views.APIView):
+    """Апивью для возврата текущего пользователя"""
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
-
-    def get_queryset(self):
+    
+    def get(self, request, format=None):
         if self.request.user:
-            return [self.request.user]
+            serializer = UserSerializer(self.request.user)
+            return Response(
+                data=serializer.data, status=status.HTTP_200_OK
+            )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,6 +60,7 @@ class MerchViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated, ]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
+
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -89,3 +102,42 @@ class AmbassadorsViewSet(
 
     def perform_create(self, serializer):
         serializer.save(pub_date=datetime.now())
+
+class SentMerchViewSet(viewsets.ModelViewSet):
+    """Вьюсет для отправки мерча"""
+    permission_classes = [IsAuthenticated,]
+    serializer_class = SentMerchSerializer
+    queryset = SentMerch.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+        ambassador_id = request.data['ambassador']
+        ambassador = get_object_or_404(Ambassador, id=ambassador_id)
+        merch_id_list = request.data['merch']
+        
+        sent_merch = SentMerch.objects.create(user=user, ambassador=ambassador)
+        lst = []
+        amount = 0
+        for merch_id in merch_id_list:
+            merch = get_object_or_404(Merch, id=merch_id)
+            amount += merch.price
+            lst.append(merch.id)
+        sent_merch.merch.set(lst)
+        sent_merch.amount = amount
+        if 'region_district' in request.data:
+            sent_merch.region_district = request.data['region_district']
+        sent_merch.save()
+        serializer = SentMerchSerializer(sent_merch)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+    @action(
+        detail=False,
+        methods=['post'],
+    )
+    def budget(self, obj):
+        """Расчет бюджета на мерч"""
+        ambassador_id = self.request.data['ambassador']
+        sent_merch_query = SentMerch.objects.filter(ambassador=ambassador_id)
+        budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
+        return Response({'budget':budget}, status=status.HTTP_200_OK)

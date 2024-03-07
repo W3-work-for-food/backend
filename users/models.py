@@ -18,7 +18,7 @@ class User(AbstractUser):
         max_length=64,
         verbose_name='Фамилия'
     )
-
+    
     class Meta:
         ordering = ['id']
         verbose_name = 'Пользователь'

@@ -1,0 +1,6 @@
+[
+    {"id": 1, "slug": "active", "status": "Активный"},
+    {"id": 2, "slug": "pause", "status": "На паузе"},
+    {"id": 3, "slug": "not_ambassador", "status": "Не амбассадор"},
+    {"id": 4, "slug": "clarify", "status": "Уточняется"}
+]
