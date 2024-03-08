@@ -1,33 +1,35 @@
 from datetime import datetime
 from http import HTTPMethod
 
-from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, views, viewsets
 from rest_framework.decorators import action
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .utils import read_notifications_for_month
-from ambassadors.models import (Address, Ambassador, Content, Merch, Profile,
-                                Promocode, SentMerch)
-from api.v1.serializers import (AddressSerializer, AmbassadorReadSerializer,
-                                AmbassadorWriteSerializer, ContentSerializer,
-                                MerchSerializer, ProfileSerializer,
-                                PromocodeSerializer, SentMerchSerializer,
-                                NotificationSerializer, UserSerializer)
+from ambassadors.models import (
+    Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch
+)
 from ambassadors.models import Notification
+from api.v1.serializers import (
+    AddressSerializer, AmbassadorReadSerializer, AmbassadorWriteSerializer,
+    ContentSerializer, MerchSerializer, ProfileSerializer,
+    PromocodeSerializer, SentMerchSerializer, NotificationSerializer,
+    UserSerializer
+)
+from .utils import read_notifications_for_month
 
-AMBASSADORS_DESCRIPTION = ('Эндпоинты для создания, изменения и просмотра '
-                           'амбассадоров')
-MERCH_DESCRIPTION = ('Эндпоинты для создания и просмотра отправки мерча и'
-                        'просмотра мерча и ')
-CONTENT_DESCRIPTION = ('Эндпоинты для создания и просмотра контента')
+AMBASSADORS_DESCRIPTION = (
+    'Эндпоинты для создания, изменения и просмотра амбассадоров'
+)
+MERCH_DESCRIPTION = 'Эндпоинты для создания, просмотра и отправки мерча'
+CONTENT_DESCRIPTION = 'Эндпоинты для создания и просмотра контента'
 
 
 class UserAPIView(views.APIView):
-    """Апивью для возврата текущего пользователя"""
+    """Апивью для возврата текущего пользователя."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
 
@@ -42,14 +44,15 @@ class UserAPIView(views.APIView):
 
 @extend_schema(tags=['Контент'], description=CONTENT_DESCRIPTION)
 class ContentViewSet(viewsets.ModelViewSet):
-    """Вьюсет для контента"""
+    """Вьюсет для контента."""
 
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
 
+
 @extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)
 class MerchViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для мерча"""
+    """Вьюсет для мерча."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = MerchSerializer
     queryset = Merch.objects.all()
@@ -81,6 +84,7 @@ class AmbassadorsViewSet(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin
 ):
+    """Вьюсет для амбассадоров."""
     http_method_names = ['get', 'post', 'patch']
     permission_classes = [IsAuthenticated, ]
     queryset = Ambassador.objects.all()
@@ -98,7 +102,7 @@ class AmbassadorsViewSet(
 
 @extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)
 class SentMerchViewSet(viewsets.ModelViewSet):
-    """Вьюсет для отправки мерча"""
+    """Вьюсет для отправки мерча."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = SentMerchSerializer
     queryset = SentMerch.objects.all()
@@ -112,6 +116,7 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         sent_merch = SentMerch.objects.create(user=user, ambassador=ambassador)
         lst = []
         amount = 0
+
         for merch_id in merch_id_list:
             merch = get_object_or_404(Merch, id=merch_id)
             amount += merch.price
@@ -120,6 +125,7 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         sent_merch.amount = amount
         sent_merch.save()
         serializer = SentMerchSerializer(sent_merch)
+
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
@@ -127,11 +133,13 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         methods=['post'],
     )
     def budget(self, obj):
-        """Расчет бюджета на мерч"""
+        """Расчет бюджета на мерч."""
         ambassador_id = self.request.data['ambassador']
         sent_merch_query = SentMerch.objects.filter(ambassador=ambassador_id)
         budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
+
         return Response({'budget': budget}, status=status.HTTP_200_OK)
+
 
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
@@ -151,10 +159,12 @@ def notification_detail(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "PATCH":
-        serializer = NotificationSerializer(notification, data=request.data, partial=True)
+        serializer = NotificationSerializer(notification, data=request.data,
+                                            partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -185,7 +195,8 @@ def notification_list(request, status):
                 )
         case 'Прочитано':
             last_month_start, last_month_end = read_notifications_for_month()
-            notifications = notifications.filter(pub_date__range=(last_month_start, last_month_end))
+            notifications = notifications.filter(
+                pub_date__range=(last_month_start, last_month_end))
 
     serializer = NotificationSerializer(notifications, many=True)
     return Response(serializer.data, 200)

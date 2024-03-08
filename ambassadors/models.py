@@ -1,10 +1,10 @@
 from django.db import models
-
-from ambassadors.validators import validate_promo_code, validate_tg_name
-#from notifications.models import Notification
+from django.utils.translation import gettext_lazy as _
+from ambassadors.validators import (
+    validate_promo_code, validate_tg_name, UNIQUE_TG_NAME_ERROR
+)
 from users.models import User
 
-# TODO: Добавить к Шамилю в модель  в поле статус
 STATUS_CHOICES = (
     ('active', 'Активный'),
     ('paused', 'На паузе'),
@@ -33,20 +33,14 @@ NOTIFICATION_STATUS_CHOICES = (
 
 
 class Merch(models.Model):
-    """Модель для мерча"""
+    """Модель мерча."""
     merch_type = models.CharField(
+        max_length=50,
         verbose_name='Наименование мерча',
-        max_length=50,
     )
-    category = models.CharField(
-        verbose_name='Категория мерча',
-        max_length=50,
-    )
+    category = models.CharField(max_length=50, verbose_name='Категория мерча')
 
-    price = models.PositiveIntegerField(
-        verbose_name='Стоимость мерча',
-
-    )
+    price = models.PositiveIntegerField(verbose_name='Стоимость мерча')
 
     class Meta:
         verbose_name = 'Мерч'
@@ -57,9 +51,8 @@ class Merch(models.Model):
 
 
 class Profile(models.Model):
-
+    """Модель амбассадора."""
     email = models.EmailField(max_length=255, verbose_name='Email')
-
     gender = models.CharField(
         max_length=10, choices=GENDER_CHOICES, verbose_name='Пол'
     )
@@ -70,9 +63,7 @@ class Profile(models.Model):
         verbose_name='Размер одежды'
     )
     foot_size = models.IntegerField(verbose_name='Размер обуви')
-
     blog_link = models.URLField(
-
         max_length=255,
         blank=True,
         null=True,
@@ -82,8 +73,8 @@ class Profile(models.Model):
         max_length=1024,
         blank=True,
         null=True,
-        verbose_name='Дополнительная информация')
-
+        verbose_name='Дополнительная информация'
+    )
     education = models.TextField(verbose_name='Образование')
     education_path = models.TextField(verbose_name='Путь обучения')
     education_goal = models.TextField(verbose_name='Цель обучения')
@@ -95,15 +86,25 @@ class Profile(models.Model):
 
 
 class Content(models.Model):
-    """Модель контента"""
-    link = models.URLField(max_length=255, unique=False, blank=False)
+    """Модель контента."""
+    link = models.URLField(
+        max_length=255,
+        unique=False,
+        blank=False,
+        verbose_name='Ссылка на контент'
+    )
     date = models.DateTimeField(
         max_length=30,
         auto_now_add=True,
         unique=False,
-        blank=False
+        blank=False,
+        verbose_name='Дата добавления контента'
     )
-    guide_condition = models.BooleanField(unique=False, blank=False)
+    guide_condition = models.BooleanField(
+        unique=False,
+        blank=False,
+        verbose_name='Статус гайда'
+    )
 
     class Meta:
         verbose_name = 'Контент'
@@ -111,6 +112,7 @@ class Content(models.Model):
 
 
 class Address(models.Model):
+    """Модель адреса амбассадора."""
     country = models.CharField(max_length=255, verbose_name='Страна')
     region = models.CharField(
         max_length=255,
@@ -130,6 +132,7 @@ class Address(models.Model):
 
 
 class Ambassador(models.Model):
+    """Модель амбассадора."""
     pub_date = models.DateTimeField(
         verbose_name='Дата добавления амбассадора'
     )
@@ -137,13 +140,12 @@ class Ambassador(models.Model):
         max_length=35,
         validators=[validate_tg_name],
         unique=True,
-        verbose_name='Телеграм'
+        verbose_name='Телеграм',
+        error_messages={
+            'unique': _(f"{UNIQUE_TG_NAME_ERROR}"),
+        }
     )
     name = models.CharField(max_length=255, verbose_name='ФИО')
-
-    '''notification = models.ForeignKey(
-        Notification, on_delete=models.CASCADE, verbose_name='Уведомления'
-    )'''
     profile = models.OneToOneField(
         Profile,
         on_delete=models.CASCADE,
@@ -153,7 +155,9 @@ class Ambassador(models.Model):
         verbose_name='Профиль'
     )
     status = models.CharField(
-        max_length=35, choices=STATUS_CHOICES, verbose_name='Статус'
+        max_length=35,
+        choices=STATUS_CHOICES,
+        verbose_name='Статус'
     )
     address = models.OneToOneField(
         Address,
@@ -161,7 +165,6 @@ class Ambassador(models.Model):
         related_name='ambassador',
         verbose_name='Адрес амбассадора'
     )
-
     content = models.OneToOneField(
         Content,
         on_delete=models.CASCADE,
@@ -169,7 +172,6 @@ class Ambassador(models.Model):
         blank=True,
         verbose_name='Контент'
     )
-
     comment = models.TextField(
         max_length=1024,
         blank=True,
@@ -185,7 +187,32 @@ class Ambassador(models.Model):
         verbose_name_plural = 'Амбассадоры'
 
 
+class Notification(models.Model):
+    """Модель уведомлений."""
+    pub_date = models.DateTimeField(auto_now_add=True)
+    ambassador = models.ForeignKey(
+        Ambassador,
+        on_delete=models.CASCADE,
+        verbose_name='Амбассадор',
+    )
+    type = models.CharField(
+        max_length=20,
+        choices=NOTIFICATION_TYPE_CHOICES,
+        default='Новая анкета'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=NOTIFICATION_STATUS_CHOICES,
+        default='Непрочитано'
+    )
+
+    class Meta:
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'
+
+
 class Promocode(models.Model):
+    """Модель промокодов."""
     ambassador = models.ForeignKey(
         Ambassador,
         on_delete=models.CASCADE,
@@ -205,7 +232,7 @@ class Promocode(models.Model):
 
 
 class SentMerch(models.Model):
-    """Модель мерч в отправке"""
+    """Модель мерч в отправке."""
     date = models.DateTimeField(
         max_length=30,
         auto_now_add=True,
@@ -238,28 +265,3 @@ class SentMerch(models.Model):
     class Meta:
         verbose_name = 'Мерч в отправке'
         verbose_name_plural = 'Мерч в отправке'
-
-
-class Notification(models.Model):
-    pub_date = models.DateTimeField(auto_now_add=True)
-    ambassador = models.ForeignKey(
-        Ambassador,
-        on_delete=models.CASCADE,
-        verbose_name='Амбассадор',
-    )
-    type = models.CharField(
-        max_length=20,
-        choices=NOTIFICATION_TYPE_CHOICES,
-        default='Новая анкета'
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=NOTIFICATION_STATUS_CHOICES,
-        default='Непрочитано'
-    )
-
-    class Meta:
-        verbose_name = 'Уведомление'
-        verbose_name_plural = 'Уведомления'
-
-    

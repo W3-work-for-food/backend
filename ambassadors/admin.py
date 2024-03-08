@@ -4,9 +4,9 @@ from ambassadors.models import (Address, Ambassador, Content, Merch, Profile,
                                 Promocode, SentMerch)
 from ambassadors.models import Notification
 
+
 class PromocodeInline(admin.TabularInline):
     model = Promocode
-
 
 
 @admin.register(Notification)
@@ -15,7 +15,6 @@ class NotificationAdmin(admin.ModelAdmin):
     list_filter = ('type', 'status', 'ambassador')
     date_hierarchy = 'pub_date'
     exclude = ('pub_date',)
-
 
 
 @admin.register(Address)
@@ -57,7 +56,6 @@ class ProfileAdmin(admin.ModelAdmin):
         'phone'
     ]
     empty_value_display = ' пусто '
-
 
 
 @admin.register(Content)
@@ -120,7 +118,4 @@ class SentMerchAdmin(admin.ModelAdmin):
         'user',
         'ambassador',
         'date',
-
-
     )
-
