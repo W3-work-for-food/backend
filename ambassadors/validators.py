@@ -3,11 +3,18 @@ import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-TG_NAME_ERROR = ('Имя пользователя должно начинать с символа "@" и состоять из'
-                ' латинских букв, цифр и символа нижнего подчеркивания, и быть'
-                ' длиной от 5 до 32 символов')
+TG_NAME_ERROR = (
+    'Имя пользователя должно начинать с символа "@" и состоять из латинских'
+    ' букв, цифр и символа нижнего подчеркивания и быть длиной от 5 до 32'
+    ' символов'
+)
 
-PROMO_CODE_ERROR = 'Промокод должен состоять из латинских букв, цифр'
+PROMO_CODE_ERROR = (
+    'Промокод должен состоять из латинских букв, цифр и быть длиной от 5 до 100'
+    ' символов'
+)
+
+UNIQUE_TG_NAME_ERROR = 'Амбассадор с таким ником телеграм уже существует'
 
 
 def validate_tg_name(value):
@@ -19,5 +26,8 @@ def validate_tg_name(value):
 
 
 def validate_promo_code(value):
+    """
+    Проверяет корректность промокода.
+    """
     if not re.match(r'^[a-zA-Z0-9]{5,100}$', value):
         raise ValidationError(_(f'{PROMO_CODE_ERROR}'), params={'value': value})

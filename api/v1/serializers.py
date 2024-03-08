@@ -1,12 +1,15 @@
 from django.db.models import Q
 from rest_framework import serializers
 
-from ambassadors.models import (Address, Ambassador, Content,
-                                Merch, Profile, Promocode, SentMerch)
-from ambassadors.models import Notification
+from ambassadors.models import (
+    Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch,
+    Notification
+)
 from users.models import User
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
+ERR_PROMO_MSG = 'Промокод {} уже существует'
+ERR_TG_MSG = 'Амбассадор с телеграммом {} уже существует'
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -16,9 +19,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'email', 'gender', 'job', 'clothing_size', 'foot_size',
-                  'blog_link', 'additional', 'education', 'education_path',
-                  'education_goal', 'phone')
+        fields = (
+            'id', 'email', 'gender', 'job', 'clothing_size', 'foot_size',
+            'blog_link', 'additional', 'education', 'education_path',
+            'education_goal', 'phone'
+        )
         read_only_fields = ('id',)
 
 
@@ -47,7 +52,7 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Ambassadors.
     """
-    promocodes = PromocodeSerializer(many=True, required=False)
+    promocodes = PromocodeSerializer(many=True)
     address = AddressSerializer()
     profile = ProfileSerializer()
 
@@ -61,19 +66,23 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ambassador
-        fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                  'address', 'promocodes', 'comment', 'guide_status', 'status')
-        read_only_fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                            'address', 'promocodes', 'comment', 'guide_status')
+        fields = (
+            'id', 'pub_date', 'telegram', 'name', 'profile', 'address',
+            'promocodes', 'comment', 'guide_status', 'status'
+        )
+        read_only_fields = (
+            'id', 'pub_date', 'telegram', 'name', 'profile', 'address',
+            'promocodes', 'comment', 'guide_status', 'status'
+        )
 
 
 class AmbassadorWriteSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Ambassadors.
     """
-    promocodes = PromocodeSerializer(many=True, required=False, partial=True)
-    address = AddressSerializer(required=True, partial=True)
-    profile = ProfileSerializer(required=True, partial=True)
+    promocodes = PromocodeSerializer(many=True, partial=True)
+    address = AddressSerializer(partial=True)
+    profile = ProfileSerializer(partial=True)
 
     def validate_profile(self, attrs):
         ambassador_id = self.instance.id if self.instance else None
@@ -88,7 +97,30 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
 
         if Ambassador.objects.filter(profile__email=email).exists():
             raise serializers.ValidationError(ERR_EMAIL_MSG.format(email))
+
         return attrs
+
+    def validate_promocodes(self, promocodes):
+        ambassador_id = self.instance.id if self.instance else None
+
+        if ambassador_id:
+            for code in promocodes:
+                if Promocode.objects.filter(
+                        promocode=code['promocode']).exclude(
+                        ambassador_id=ambassador_id
+                ).exists():
+                    raise serializers.ValidationError(
+                        ERR_PROMO_MSG.format(code.promocode)
+                    )
+            return promocodes
+
+        for code in promocodes:
+            if Promocode.objects.filter(promocode=code['promocode']).exists():
+                raise serializers.ValidationError(
+                    ERR_PROMO_MSG.format(code['promocode'])
+                )
+
+        return promocodes
 
     def create(self, validated_data):
         promocodes_data = validated_data.pop('promocodes')
@@ -126,38 +158,35 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.comment = validated_data.get('comment', instance.comment)
+        instance.status = validated_data.get('status', instance.status)
         instance.guide_status = validated_data.get(
             'guide_status', instance.guide_status
         )
-        instance.status = validated_data.get(
-            'status', instance.status
-        )    
+
         new_address = validated_data.get('address')
+        new_promo_codes = validated_data.pop('promocodes')
+        new_profile = validated_data.get('profile')
+
         if new_address:
             address = instance.address
             for key, value in new_address.items():
                 setattr(address, key, value)
             address.save()
 
-        new_profile = validated_data.get('profile')
         if new_profile:
             profile = instance.profile
             for key, value in new_profile.items():
                 setattr(profile, key, value)
             profile.save()
-        
 
-
-
-        new_promo_codes = validated_data.get('promocodes')
-        
         if new_promo_codes:
             for code_obj in new_promo_codes:
                 existing_promo_code = Promocode.objects.filter(
                     Q(ambassador_id=instance.id) &
                     Q(promocode=code_obj['promocode'])
                 ).first()
-                if existing_promo_code:
+                if (existing_promo_code and
+                        existing_promo_code.is_active != code_obj['is_active']):
                     existing_promo_code.is_active = code_obj['is_active']
                     existing_promo_code.save()
                 else:
@@ -170,8 +199,10 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ambassador
-        fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                  'address', 'promocodes', 'comment', 'guide_status', 'status')
+        fields = (
+            'id', 'pub_date', 'telegram', 'name', 'profile', 'address',
+            'promocodes', 'comment', 'guide_status', 'status'
+        )
         read_only_fields = ('id', 'pub_date')
 
 
@@ -207,11 +238,10 @@ class SentMerchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SentMerch
-        fields = ('id', 'user', 'date',
-                  'ambassador', 'merch',
-                  'amount', 'sized_merch',
-                )
-
+        fields = (
+            'id', 'user', 'date', 'ambassador', 'merch', 'amount',
+            'sized_merch',
+        )
 
     def get_sized_merch(self, obj):
         query = obj.merch.all()
@@ -244,7 +274,6 @@ class NotificationSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели уведомлений.
     """
-    
 
     class Meta:
         model = Notification
