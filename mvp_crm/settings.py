@@ -3,7 +3,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,7 +34,6 @@ PROJECT_APPS = [
     'users.apps.UsersConfig',
     'ambassadors.apps.AmbassadorsConfig',
     'api.apps.ApiConfig',
-    'notifications.apps.NotificationsConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
