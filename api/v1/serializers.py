@@ -280,10 +280,3 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
         read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
 
-    '''def update(self, instance, validated_data):
-        status_data = validated_data.pop('status', None)
-        if status_data is not None:
-            status_obj = NotificationStatus.objects.get(status=status_data)
-            instance.status = status_obj
-        instance.save()
-        return instance'''
