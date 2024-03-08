@@ -1,11 +1,21 @@
 from django.contrib import admin
 
-from ambassadors.models import (Ambassador, Merch, AmbassadorStatus, Content,
-                                SentMerch, Profile, Address, Promocode)
-
+from ambassadors.models import (Address, Ambassador, Content, Merch, Profile,
+                                Promocode, SentMerch)
+from ambassadors.models import Notification
 
 class PromocodeInline(admin.TabularInline):
     model = Promocode
+
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('type', 'status', 'ambassador')
+    list_filter = ('type', 'status', 'ambassador')
+    date_hierarchy = 'pub_date'
+    exclude = ('pub_date',)
+
 
 
 @admin.register(Address)
@@ -49,23 +59,12 @@ class ProfileAdmin(admin.ModelAdmin):
     empty_value_display = ' пусто '
 
 
-@admin.register(AmbassadorStatus)
-class AmbassadorStatusAdmin(admin.ModelAdmin):
-    list_display = ('id', 'slug', 'status')
-    search_fields = ('slug', 'status')
-    list_filter = ('status',)
-
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
     list_display = ('id', 'link', 'date', 'guide_condition')
     search_fields = ('link',)
     list_filter = ('guide_condition',)
-
-
-@admin.register(Profile)
-class AmbassadorAdmin(admin.ModelAdmin):
-    list_display = ('clothing_size', 'foot_size')
 
 
 @admin.register(Ambassador)
@@ -83,7 +82,8 @@ class AmbassadorAdmin(admin.ModelAdmin):
         'profile',
         'promocodes',
         'comment',
-        'guide_status'
+        'guide_status',
+        'status'
     )
     list_editable = (
          'telegram',
@@ -120,7 +120,7 @@ class SentMerchAdmin(admin.ModelAdmin):
         'user',
         'ambassador',
         'date',
-        'amount',
+
 
     )
-    empty_value_display = ' пусто '
+

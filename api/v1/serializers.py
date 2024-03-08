@@ -1,9 +1,10 @@
 from django.db.models import Q
 from rest_framework import serializers
-from users.models import User
 
-from ambassadors.models import (Ambassador, AmbassadorStatus, Content, Merch,
-                                SentMerch, Profile, Address, Promocode)
+from ambassadors.models import (Address, Ambassador, Content,
+                                Merch, Profile, Promocode, SentMerch)
+from ambassadors.models import Notification
+from users.models import User
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
 
@@ -55,10 +56,13 @@ class AmbassadorReadSerializer(serializers.ModelSerializer):
         serializer = PromocodeSerializer(promocodes, many=True)
         return serializer.data
 
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
     class Meta:
         model = Ambassador
         fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                  'address', 'promocodes', 'comment', 'guide_status')
+                  'address', 'promocodes', 'comment', 'guide_status', 'status')
         read_only_fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
                             'address', 'promocodes', 'comment', 'guide_status')
 
@@ -125,7 +129,9 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         instance.guide_status = validated_data.get(
             'guide_status', instance.guide_status
         )
-
+        instance.status = validated_data.get(
+            'status', instance.status
+        )    
         new_address = validated_data.get('address')
         if new_address:
             address = instance.address
@@ -139,8 +145,12 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             for key, value in new_profile.items():
                 setattr(profile, key, value)
             profile.save()
+        
+
+
 
         new_promo_codes = validated_data.get('promocodes')
+        
         if new_promo_codes:
             for code_obj in new_promo_codes:
                 existing_promo_code = Promocode.objects.filter(
@@ -161,43 +171,14 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ambassador
         fields = ('id', 'pub_date', 'telegram', 'name', 'profile',
-                  'address', 'promocodes', 'comment', 'guide_status')
+                  'address', 'promocodes', 'comment', 'guide_status', 'status')
         read_only_fields = ('id', 'pub_date')
-
-
-# class NotificationStatusSerializer(serializers.ModelSerializer):
-#     """Возвращает объекты модели StatusIDP"""
-#
-#     class Meta:
-#         model = None  # StatusNotification
-#         fields = '__all__'
-
-
-# class NotificationSerializer(serializers.ModelSerializer):
-#     """Возвращает объект конкретного уведомления"""
-#     status = NotificationStatusSerializer()
-#
-#     class Meta:
-#         model = None  # Notification
-#         fields = (
-#             'id',
-#             'ambassador',
-#             'date',
-#             'type',
-#             'status',
-#         )
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
-
-
-class AmbassadorStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AmbassadorStatus
-        fields = ['id', 'slug', 'status']
 
 
 class ContentSerializer(serializers.ModelSerializer):
@@ -229,8 +210,8 @@ class SentMerchSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'date',
                   'ambassador', 'merch',
                   'amount', 'sized_merch',
-                  'region_district'
-                  )
+                )
+
 
     def get_sized_merch(self, obj):
         query = obj.merch.all()
@@ -257,3 +238,23 @@ class SentMerchSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         del data['merch']
         return data
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели уведомлений.
+    """
+    
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
+        read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
+
+    '''def update(self, instance, validated_data):
+        status_data = validated_data.pop('status', None)
+        if status_data is not None:
+            status_obj = NotificationStatus.objects.get(status=status_data)
+            instance.status = status_obj
+        instance.save()
+        return instance'''
