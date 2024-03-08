@@ -12,7 +12,7 @@ router_v1.register('content', ContentViewSet, basename='content')
 router_v1.register('sentmerch', SentMerchViewSet, basename='sentmerch')
 
 urlpatterns = [
-    path('getuser', UserAPIView.as_view()),
+    path('getuser/', UserAPIView.as_view()),
     path('', include(router_v1.urls)),
     path('notifications/<int:pk>/', notification_detail, name="notification-detail"),
     path('notifications/unviewed/', notification_list, {'status': 'unread'}, name='notification-unviewed-list'),
