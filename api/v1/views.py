@@ -52,12 +52,12 @@ class ContentViewSet(viewsets.ModelViewSet):
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
 
-    '''def list(self, request, ambassador_id, *args, **kwargs):
-        content = Ambassador.objects.get(id=ambassador_id).content
+    def list(self, request, ambassador_id, *args, **kwargs):
+        content = Content.objects.filter(ambassador_id=ambassador_id).all()
         print(content)
         serializer = ContentSerializer(content, many=True)
-        
-        return Response(data=serializer.data, status=status.HTTP_200_OK)'''
+        print('!!!!!!!!!!!', serializer)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)

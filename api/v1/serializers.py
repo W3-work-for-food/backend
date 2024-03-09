@@ -215,7 +215,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         model = Ambassador
         fields = (
             'id', 'pub_date', 'telegram', 'name', 'profile', 'address',
-            'promocodes', 'comment', 'guide_status', 'status'
+            'promocodes', 'content', 'comment', 'guide_status', 'status'
         )
         read_only_fields = ('id', 'pub_date')
 
@@ -229,7 +229,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
-        fields = ['id', 'link', 'date', 'guide_condition']
+        fields = ['id', 'ambassador_id', 'link', 'date', 'guide_condition']
 
 
 class MerchSerializer(serializers.ModelSerializer):

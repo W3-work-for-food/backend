@@ -60,7 +60,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'link', 'date', 'guide_condition')
+    list_display = ('id', 'ambassador_id', 'link', 'date', 'guide_condition')
     search_fields = ('link',)
     list_filter = ('guide_condition',)
 
