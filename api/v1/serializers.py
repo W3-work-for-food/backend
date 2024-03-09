@@ -161,6 +161,11 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             promocodes, many=True
         ).data
 
+        notification = Notification.objects.create(
+            ambassador=ambassador, type='new_profile',
+            status='unread'
+        )
+        notification.save()
         return ambassador_data
 
     def update(self, instance, validated_data):
@@ -168,6 +173,15 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.status = validated_data.get('status', instance.status)
+
+        if instance.guide_status is False and validated_data.get(
+            'guide_status', instance.guide_status
+        ) is True:
+            notification = Notification.objects.create(
+                ambassador_id=instance.id, type='guide_completed',
+                status='unread'
+            )
+            notification.save
         instance.guide_status = validated_data.get(
             'guide_status', instance.guide_status
         )
@@ -210,7 +224,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         model = Ambassador
         fields = (
             'id', 'pub_date', 'telegram', 'name', 'profile', 'address',
-            'promocodes', 'comment', 'guide_status', 'status'
+            'promocodes', 'content', 'comment', 'guide_status', 'status'
         )
         read_only_fields = ('id', 'pub_date')
 
@@ -224,7 +238,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
-        fields = ['id', 'link', 'date', 'guide_condition']
+        fields = ['id', 'ambassador_id', 'link', 'date', 'guide_condition']
 
 
 class MerchSerializer(serializers.ModelSerializer):
@@ -283,9 +297,14 @@ class NotificationSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели уведомлений.
     """
+    ambassador = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
         fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
         read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
 
+    def get_ambassador(self, value):
+        data = {'ambassador_id':value.ambassador.id, 'telegram':value.ambassador.telegram,
+                'name':value.ambassador.name}
+        return data

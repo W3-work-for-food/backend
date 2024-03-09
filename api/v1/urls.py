@@ -9,8 +9,8 @@ from api.v1.views import (
 router_v1 = DefaultRouter()
 router_v1.register('merch', MerchViewSet, basename='merch')
 router_v1.register('ambassadors', AmbassadorsViewSet, basename='ambassadors')
-router_v1.register('content', ContentViewSet, basename='content')
-router_v1.register('sentmerch', SentMerchViewSet, basename='sentmerch')
+router_v1.register(r'ambassadors/(?P<ambassador_id>\d+)/content', ContentViewSet, basename='content')
+router_v1.register(r'ambassadors/(?P<ambassador_id>\d+)/sentmerch', SentMerchViewSet, basename='sentmerch')
 
 urlpatterns = [
     path('getuser/', UserAPIView.as_view()),

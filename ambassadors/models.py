@@ -83,32 +83,6 @@ class Profile(models.Model):
         verbose_name_plural = 'Профили амбассадоров'
 
 
-class Content(models.Model):
-    """Модель контента."""
-    link = models.URLField(
-        max_length=255,
-        unique=False,
-        blank=False,
-        verbose_name='Ссылка на контент'
-    )
-    date = models.DateTimeField(
-        max_length=30,
-        auto_now_add=True,
-        unique=False,
-        blank=False,
-        verbose_name='Дата добавления контента'
-    )
-    guide_condition = models.BooleanField(
-        unique=False,
-        blank=False,
-        verbose_name='Статус гайда'
-    )
-
-    class Meta:
-        verbose_name = 'Контент'
-        verbose_name_plural = 'Контент'
-
-
 class Address(models.Model):
     """Модель адреса амбассадора."""
     country = models.CharField(max_length=255, verbose_name='Страна')
@@ -162,13 +136,6 @@ class Ambassador(models.Model):
         on_delete=models.CASCADE,
         related_name='ambassador',
         verbose_name='Адрес амбассадора'
-    )
-    content = models.OneToOneField(
-        Content,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name='Контент'
     )
     comment = models.TextField(
         max_length=1024,
@@ -263,3 +230,34 @@ class SentMerch(models.Model):
     class Meta:
         verbose_name = 'Мерч в отправке'
         verbose_name_plural = 'Мерч в отправке'
+
+class Content(models.Model):
+    """Модель контента."""
+    ambassador = models.ForeignKey(
+        Ambassador,
+        on_delete=models.CASCADE,
+        related_name='content',
+        verbose_name='Амбассадор'
+    )
+    link = models.URLField(
+        max_length=255,
+        unique=False,
+        blank=False,
+        verbose_name='Ссылка на контент'
+    )
+    date = models.DateTimeField(
+        max_length=30,
+        auto_now_add=True,
+        unique=False,
+        blank=False,
+        verbose_name='Дата добавления контента'
+    )
+    guide_condition = models.BooleanField(
+        unique=False,
+        blank=False,
+        verbose_name='Статус гайда'
+    )
+
+    class Meta:
+        verbose_name = 'Контент'
+        verbose_name_plural = 'Контент'
