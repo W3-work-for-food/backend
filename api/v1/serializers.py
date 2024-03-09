@@ -3,19 +3,27 @@ from rest_framework import serializers
 
 from ambassadors.models import (
     Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch,
-    Notification
+    Notification, GENDER_CHOICES, CLOTHING_SIZE_CHOICES
 )
 from users.models import User
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
 ERR_PROMO_MSG = 'Промокод {} уже существует'
-ERR_TG_MSG = 'Амбассадор с телеграммом {} уже существует'
+ERR_TG_MSG = 'Амбассадор с телеграмом {} уже существует'
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Profile.
     """
+    gender = serializers.SerializerMethodField()
+    clothing_size = serializers.SerializerMethodField()
+
+    def get_gender(self, obj):
+        return dict(GENDER_CHOICES).get(obj.gender)
+
+    def get_clothing_size(self, obj):
+        return dict(CLOTHING_SIZE_CHOICES).get(obj.clothing_size)
 
     class Meta:
         model = Profile
@@ -110,7 +118,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
                         ambassador_id=ambassador_id
                 ).exists():
                     raise serializers.ValidationError(
-                        ERR_PROMO_MSG.format(code.promocode)
+                        ERR_PROMO_MSG.format(code['promocode'])
                     )
             return promocodes
 
@@ -157,6 +165,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.telegram = validated_data.get('telegram', instance.telegram)
+        instance.name = validated_data.get('name', instance.name)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.status = validated_data.get('status', instance.status)
         instance.guide_status = validated_data.get(
@@ -164,7 +173,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         )
 
         new_address = validated_data.get('address')
-        new_promo_codes = validated_data.pop('promocodes')
+        new_promo_codes = validated_data.get('promocodes')
         new_profile = validated_data.get('profile')
 
         if new_address:

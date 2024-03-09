@@ -11,9 +11,7 @@ STATUS_CHOICES = (
     ('non_ambassador', 'Не амбассадор'),
     ('clarifying', 'Уточняется'),
 )
-
-GENDER_CHOICES = (('male', 'М'), ('female', 'Ж'))
-
+GENDER_CHOICES = (('male', 'Мужской'), ('female', 'Женский'))
 CLOTHING_SIZE_CHOICES = (
     ('extra_small', 'XS'),
     ('small', 'S'),
