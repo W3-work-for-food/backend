@@ -110,7 +110,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
                         ambassador_id=ambassador_id
                 ).exists():
                     raise serializers.ValidationError(
-                        ERR_PROMO_MSG.format(code.promocode)
+                        ERR_PROMO_MSG.format(code['promocode'])
                     )
             return promocodes
 
@@ -153,12 +153,26 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
             promocodes, many=True
         ).data
 
+        notification = Notification.objects.create(
+            ambassador=ambassador, type='new_profile',
+            status='unread'
+        )
+        notification.save()
         return ambassador_data
 
     def update(self, instance, validated_data):
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.comment = validated_data.get('comment', instance.comment)
         instance.status = validated_data.get('status', instance.status)
+
+        if instance.guide_status is False and validated_data.get(
+            'guide_status', instance.guide_status
+        ) is True:
+            notification = Notification.objects.create(
+                ambassador_id=instance.id, type='guide_completed',
+                status='unread'
+            )
+            notification.save
         instance.guide_status = validated_data.get(
             'guide_status', instance.guide_status
         )
@@ -274,9 +288,14 @@ class NotificationSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели уведомлений.
     """
+    ambassador = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
         fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
         read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
 
+    def get_ambassador(self, value):
+        data = {'ambassador_id':value.ambassador.id, 'telegram':value.ambassador.telegram,
+                'name':value.ambassador.name}
+        return data

@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.authtoken.views import ObtainAuthToken
+from drf_spectacular.utils import extend_schema
 
 
 class CustomAuthTokenSerializer(serializers.Serializer):
@@ -38,6 +39,7 @@ class CustomAuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+@extend_schema(tags=['Авторизация'])
 class CustomObtainAuthToken(ObtainAuthToken):
     """Кастомный класс аутентификации."""
     serializer_class = CustomAuthTokenSerializer

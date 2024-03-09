@@ -4,6 +4,7 @@ from http import HTTPMethod
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, views, viewsets
+from rest_framework.status import HTTP_200_OK
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -26,8 +27,10 @@ AMBASSADORS_DESCRIPTION = (
 )
 MERCH_DESCRIPTION = 'Эндпоинты для создания, просмотра и отправки мерча'
 CONTENT_DESCRIPTION = 'Эндпоинты для создания и просмотра контента'
+NOTIFICATION_DESCRIPTION = 'Эндпоинты для просмотра уведомлений'
 
 
+@extend_schema(tags=['Авторизация'])
 class UserAPIView(views.APIView):
     """Апивью для возврата текущего пользователя."""
     permission_classes = [IsAuthenticated, ]
@@ -48,6 +51,13 @@ class ContentViewSet(viewsets.ModelViewSet):
 
     serializer_class = ContentSerializer
     queryset = Content.objects.all()
+
+    '''def list(self, request, ambassador_id, *args, **kwargs):
+        content = Ambassador.objects.get(id=ambassador_id).content
+        print(content)
+        serializer = ContentSerializer(content, many=True)
+        
+        return Response(data=serializer.data, status=status.HTTP_200_OK)'''
 
 
 @extend_schema(tags=['Мерч'], description=MERCH_DESCRIPTION)
@@ -107,9 +117,15 @@ class SentMerchViewSet(viewsets.ModelViewSet):
     serializer_class = SentMerchSerializer
     queryset = SentMerch.objects.all()
 
-    def create(self, request, *args, **kwargs):
+    def list(self, request, ambassador_id, *args, **kwargs):
+        sent_merch = SentMerch.objects.filter(ambassador_id=ambassador_id)
+        serializer = SentMerchSerializer(sent_merch, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+
+    def create(self, request, ambassador_id, *args, **kwargs):
         user = self.request.user
-        ambassador_id = request.data['ambassador']
+        
         ambassador = get_object_or_404(Ambassador, id=ambassador_id)
         merch_id_list = request.data['merch']
 
@@ -128,29 +144,20 @@ class SentMerchViewSet(viewsets.ModelViewSet):
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(
-        detail=False,
-        methods=['post'],
-    )
-    def budget(self, obj):
-        """Расчет бюджета на мерч."""
-        ambassador_id = self.request.data['ambassador']
+    @action(detail=False, methods=['get'])
+    def budget(self, obj, ambassador_id):
+        """Расчет бюджета на мерч по амбассадору."""
+        print(ambassador_id)
         sent_merch_query = SentMerch.objects.filter(ambassador=ambassador_id)
         budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
-
         return Response({'budget': budget}, status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def notification_detail(request, pk):
     """
     Получение и обновление уведомления по его идентификатору.
-    Args:
-        request (HttpRequest): Объект запроса.
-        pk (int): Идентификатор уведомления.
-    Returns:
-        Response: HTTP-ответ с данными уведомления или ошибкой.
     """
     notification = Notification.objects.get(pk=pk)
 
@@ -164,20 +171,14 @@ def notification_detail(request, pk):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-
+@extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def notification_list(request, status):
     """
     Получение списка уведомлений по статусу, типу и дате.
-    Args:
-        request (HttpRequest): Объект запроса.
-        status (str): Статус уведомлений ("Непрочитано" или "Прочитано").
-    Returns:
-        Response: HTTP-ответ со списком уведомлений или ошибкой.
     """
     type = request.query_params.get('type')
     date_from = request.query_params.get('pub_date')
@@ -199,4 +200,4 @@ def notification_list(request, status):
                 pub_date__range=(last_month_start, last_month_end))
 
     serializer = NotificationSerializer(notifications, many=True)
-    return Response(serializer.data, 200)
+    return Response(serializer.data, status=HTTP_200_OK)
