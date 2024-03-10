@@ -3,8 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from api.v1.views import (
     AmbassadorsViewSet, ContentViewSet, MerchViewSet, SentMerchViewSet,
-    UserAPIView, notification_detail, notification_list, ambassadors_form_get
+    UserAPIView, notification_detail, notification_list
 )
+from api.v1.ya_form_views import ambassadors_form_get
 
 router_v1 = DefaultRouter()
 router_v1.register('merch', MerchViewSet, basename='merch')
