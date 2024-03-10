@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     """Модель пользователя"""
-    
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     email = models.EmailField(
@@ -18,7 +18,7 @@ class User(AbstractUser):
         max_length=64,
         verbose_name='Фамилия'
     )
-    
+
     class Meta:
         ordering = ['id']
         verbose_name = 'Пользователь'

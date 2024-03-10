@@ -16,14 +16,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Profile.
     """
-    gender = serializers.SerializerMethodField()
-    clothing_size = serializers.SerializerMethodField()
-
-    def get_gender(self, obj):
-        return dict(GENDER_CHOICES).get(obj.gender)
-
-    def get_clothing_size(self, obj):
-        return dict(CLOTHING_SIZE_CHOICES).get(obj.clothing_size)
 
     class Meta:
         model = Profile

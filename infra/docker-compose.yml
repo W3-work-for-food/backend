@@ -28,7 +28,7 @@ services:
     container_name: mvp_crm_backend
     build:
       context: ../
-      dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
     ports:
       - '${BACKEND_CONTAINER_PORT}:8000'
     volumes:

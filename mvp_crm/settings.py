@@ -26,7 +26,6 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'rest_framework',
     'rest_framework.authtoken',
-    # 'celery',
 ]
 
 PROJECT_APPS = [
@@ -67,13 +66,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mvp_crm.wsgi.application'
-
-'''DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': BASE_DIR / 'db.sqlite3',
-     }
-}'''
 
 DATABASES = {
     "default": {

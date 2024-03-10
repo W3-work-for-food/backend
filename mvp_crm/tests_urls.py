@@ -1,8 +1,6 @@
-import unittest
 from django.urls import reverse, resolve
 from django.test import SimpleTestCase
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from users.auth import CustomObtainAuthToken
 
 
 class TestURLPatterns(SimpleTestCase):
