@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from api.v1.views import (
     AmbassadorsViewSet, ContentViewSet, MerchViewSet, SentMerchViewSet,
-    UserAPIView, notification_detail, notification_list
+    UserAPIView, notification_detail, notification_list, ambassadors_form_get
 )
 
 router_v1 = DefaultRouter()
@@ -31,5 +31,10 @@ urlpatterns = [
         notification_list,
         {'status': 'read'},
         name='notification-viewed-list'
+    ),
+    path(
+        'ambassadorsform/',
+        ambassadors_form_get,
+        name='ambassadors-form-get'
     ),
 ]

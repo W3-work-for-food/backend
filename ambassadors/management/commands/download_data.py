@@ -84,12 +84,12 @@ class Command(BaseCommand):
             comment = entry.get('comment')
             guide_status = entry.get('guide_status')
             address = Address.objects.create(
-                    country=country,
-                    region=region,
-                    city=city,
-                    address=address,
-                    postal_code=postal_code
-                )
+                country=country,
+                region=region,
+                city=city,
+                address=address,
+                postal_code=postal_code
+            )
             profile = Profile.objects.create(
                     email=email,
                     gender=gender,
