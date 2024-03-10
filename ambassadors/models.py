@@ -94,7 +94,7 @@ class Address(models.Model):
     )
     city = models.CharField(max_length=255, verbose_name='Город')
     address = models.CharField(max_length=255, verbose_name='Адрес')
-    postal_code = models.PositiveSmallIntegerField(
+    postal_code = models.PositiveIntegerField(
         verbose_name='Почтовый индекс'
     )
 
@@ -231,6 +231,7 @@ class SentMerch(models.Model):
         verbose_name = 'Мерч в отправке'
         verbose_name_plural = 'Мерч в отправке'
 
+
 class Content(models.Model):
     """Модель контента."""
     ambassador = models.ForeignKey(
@@ -241,20 +242,20 @@ class Content(models.Model):
     )
     link = models.URLField(
         max_length=255,
-        unique=False,
-        blank=False,
+        blank=True,
+        null=True,
         verbose_name='Ссылка на контент'
     )
     date = models.DateTimeField(
         max_length=30,
         auto_now_add=True,
-        unique=False,
-        blank=False,
+        blank=True,
+        null=True,
         verbose_name='Дата добавления контента'
     )
     guide_condition = models.BooleanField(
-        unique=False,
-        blank=False,
+        blank=True,
+        null=True,
         verbose_name='Статус гайда'
     )
 

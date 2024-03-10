@@ -16,14 +16,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Profile.
     """
-    gender = serializers.SerializerMethodField()
-    clothing_size = serializers.SerializerMethodField()
-
-    def get_gender(self, obj):
-        return dict(GENDER_CHOICES).get(obj.gender)
-
-    def get_clothing_size(self, obj):
-        return dict(CLOTHING_SIZE_CHOICES).get(obj.clothing_size)
 
     class Meta:
         model = Profile
@@ -207,8 +199,10 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
                     Q(ambassador_id=instance.id) &
                     Q(promocode=code_obj['promocode'])
                 ).first()
-                if (existing_promo_code and
-                        existing_promo_code.is_active != code_obj['is_active']):
+                if (
+                    existing_promo_code and
+                    existing_promo_code.is_active != code_obj['is_active']
+                ):
                     existing_promo_code.is_active = code_obj['is_active']
                     existing_promo_code.save()
                 else:
@@ -229,30 +223,35 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор пользователя."""
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
 
 
 class ContentSerializer(serializers.ModelSerializer):
+    """Сериализатор контентапользователя."""
     class Meta:
         model = Content
         fields = ['id', 'ambassador_id', 'link', 'date', 'guide_condition']
 
 
 class MerchSerializer(serializers.ModelSerializer):
+    """Сериализатор мечра."""
     class Meta:
         model = Merch
         fields = '__all__'
 
 
 class AmbassadorSerializer(serializers.ModelSerializer):
+    """Сериализатор амбассадора."""
     class Meta:
         model = Ambassador
         fields = '__all__'
 
 
 class SentMerchSerializer(serializers.ModelSerializer):
+    """Сериализатор отправки мерча."""
     merch = MerchSerializer(many=True)
     sized_merch = serializers.SerializerMethodField()
     ambassador = AmbassadorSerializer()
@@ -299,6 +298,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
 
     def get_ambassador(self, value):
-        data = {'ambassador_id':value.ambassador.id, 'telegram':value.ambassador.telegram,
-                'name':value.ambassador.name}
+        data = {
+            'ambassador_id': value.ambassador.id,
+            'telegram': value.ambassador.telegram,
+            'name': value.ambassador.name
+        }
         return data

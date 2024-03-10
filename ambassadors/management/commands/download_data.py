@@ -11,6 +11,7 @@ def clear_data(self):
         self.style.WARNING('Существующие записи мерча были удалены.')
     )
 
+
 class Command(BaseCommand):
     help = 'Update data merch'
 
@@ -22,6 +23,7 @@ class Command(BaseCommand):
             default=False,
             help='Удаляет предыдущие данные',
         )
+
     def handle(self, *args, **options):
         """Загрузка данных."""
 
@@ -33,7 +35,7 @@ class Command(BaseCommand):
             id = entry.get('id')
             merch_type = entry.get('merch_type')
             category = entry.get('category')
-            price = entry.get('price')        
+            price = entry.get('price')
 
             Merch.objects.get_or_create(
                 id=id, merch_type=merch_type,
@@ -44,7 +46,9 @@ class Command(BaseCommand):
             self.style.SUCCESS('Записи мерча сохранены')
         )
 
-        with open('ambassadors/data/ambassadors_dump.json', encoding='utf8') as file:
+        with open(
+            'ambassadors/data/ambassadors_dump.json', encoding='utf8'
+        ) as file:
             data = json.load(file)
 
         for entry in data:
@@ -84,12 +88,12 @@ class Command(BaseCommand):
             comment = entry.get('comment')
             guide_status = entry.get('guide_status')
             address = Address.objects.create(
-                    country=country,
-                    region=region,
-                    city=city,
-                    address=address,
-                    postal_code=postal_code
-                )
+                country=country,
+                region=region,
+                city=city,
+                address=address,
+                postal_code=postal_code
+            )
             profile = Profile.objects.create(
                     email=email,
                     gender=gender,

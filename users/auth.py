@@ -30,7 +30,10 @@ class CustomAuthTokenSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'),
                                 email=email, password=password)
             if not user:
-                msg = _('Не удается войти в систему с предоставленными учетными данными.')
+                msg = _(
+                    'Не удается войти в систему '
+                    'с предоставленными учетными данными.'
+                )
                 raise serializers.ValidationError(msg, code='authorization')
         else:
             msg = _('Должны быть указаны "E-mail" и "пароль".')
@@ -38,6 +41,7 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
 
 @extend_schema(tags=['Авторизация'])
 class CustomObtainAuthToken(ObtainAuthToken):
