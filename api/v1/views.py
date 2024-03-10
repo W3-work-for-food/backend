@@ -56,7 +56,6 @@ class ContentViewSet(viewsets.ModelViewSet):
         content = Content.objects.filter(ambassador_id=ambassador_id).all()
         print(content)
         serializer = ContentSerializer(content, many=True)
-        print('!!!!!!!!!!!', serializer)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 

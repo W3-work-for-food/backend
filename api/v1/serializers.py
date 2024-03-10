@@ -166,13 +166,12 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         instance.status = validated_data.get('status', instance.status)
 
         if instance.guide_status is False and validated_data.get(
-            'guide_status', instance.guide_status
+            'guide_status'
         ) is True:
-            notification = Notification.objects.create(
+            Notification.objects.create(
                 ambassador_id=instance.id, type='guide_completed',
                 status='unread'
             )
-            notification.save
         instance.guide_status = validated_data.get(
             'guide_status', instance.guide_status
         )
@@ -277,11 +276,6 @@ class SentMerchSerializer(serializers.ModelSerializer):
                     sized_merch = (merch.merch_type, None)
             result.append(sized_merch)
         return result
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        del data['merch']
-        return data
 
 
 class NotificationSerializer(serializers.ModelSerializer):
