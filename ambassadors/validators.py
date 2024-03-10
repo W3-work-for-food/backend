@@ -10,7 +10,8 @@ TG_NAME_ERROR = (
 )
 
 PROMO_CODE_ERROR = (
-    'Промокод должен состоять из латинских букв, цифр и быть длиной от 5 до 100'
+    'Промокод должен состоять из латинских букв, '
+    'цифр и быть длиной от 5 до 100'
     ' символов'
 )
 
@@ -30,4 +31,6 @@ def validate_promo_code(value):
     Проверяет корректность промокода.
     """
     if not re.match(r'^[a-zA-Z0-9]{5,100}$', value):
-        raise ValidationError(_(f'{PROMO_CODE_ERROR}'), params={'value': value})
+        raise ValidationError(
+            _(f'{PROMO_CODE_ERROR}'), params={'value': value}
+        )

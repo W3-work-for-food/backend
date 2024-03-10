@@ -1,13 +1,13 @@
 from datetime import datetime
 
 from drf_spectacular.utils import extend_schema
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_201_CREATED
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from ambassadors.models import (
-    Address, Ambassador, Content, Profile
+    Address, Ambassador, Content, Profile, Notification
 )
 from .views import AMBASSADORS_DESCRIPTION
 
@@ -63,11 +63,11 @@ def ambassadors_form_get(request):
 
         telegram = data['telegram']
         name = data['name']
-        pub_date=datetime.now()
+        pub_date = datetime.now()
         status = data['status']
         comment = data['comment']
         guide_status = data['guide_status']
-        ambassador = Ambassador.objects.get_or_create(
+        ambassador, created = Ambassador.objects.get_or_create(
             telegram=telegram,
             defaults={
                 'pub_date': pub_date,
@@ -79,10 +79,15 @@ def ambassadors_form_get(request):
                 'profile': profile,
             }
         )
+        if created:
+            Notification.objects.create(
+                ambassador=ambassador, type='new_profile',
+                status='unread'
+            )
         Content.objects.create(
             ambassador_id=ambassador.id,
         )
     except:
         raise TypeError('Неверный данные')
-    
-    return Response(status=HTTP_200_OK)
+
+    return Response(status=HTTP_201_CREATED)

@@ -6,6 +6,7 @@ from .auth import CustomAuthTokenSerializer
 
 
 class CustomAuthTokenSerializerTest(TestCase):
+    """Тесты авторизации"""
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = User.objects.create_user(username='test', email='test@example.com', password='testpassword')

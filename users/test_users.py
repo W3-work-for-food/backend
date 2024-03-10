@@ -4,6 +4,7 @@ from .models import User
 
 
 class TestUserModel(TestCase):
+    """Тесты пользователей"""
     def setUp(self):
         self.user1 = User.objects.create_user(username='user1', email='test1@example.com', password='test123')
         self.user2 = User.objects.create_user(username='user2', email='test2@example.com', password='test123')

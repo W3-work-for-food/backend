@@ -7,7 +7,7 @@ from rest_framework import mixins, status, views, viewsets
 from rest_framework.status import HTTP_200_OK
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ambassadors.models import (
@@ -68,18 +68,21 @@ class MerchViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AddressViewSet(viewsets.ModelViewSet):
+    """Вьюсет для адреса."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
+    """Вьюсет для профайла."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
 
 
 class PromocodeViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для промокодов."""
     permission_classes = [IsAuthenticated, ]
     serializer_class = PromocodeSerializer
     queryset = Promocode.objects.all()
@@ -120,11 +123,9 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         sent_merch = SentMerch.objects.filter(ambassador_id=ambassador_id)
         serializer = SentMerchSerializer(sent_merch, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-    
 
     def create(self, request, ambassador_id, *args, **kwargs):
         user = self.request.user
-        
         ambassador = get_object_or_404(Ambassador, id=ambassador_id)
         merch_id_list = request.data['merch']
 
@@ -151,6 +152,7 @@ class SentMerchViewSet(viewsets.ModelViewSet):
         budget = sum([sent_merch.amount for sent_merch in sent_merch_query])
         return Response({'budget': budget}, status=status.HTTP_200_OK)
 
+
 @extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
 @api_view(['GET', 'PATCH'])
 @permission_classes([IsAuthenticated])
@@ -171,6 +173,7 @@ def notification_detail(request, pk):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 @extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
 @api_view(['GET'])

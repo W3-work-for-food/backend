@@ -231,6 +231,7 @@ class SentMerch(models.Model):
         verbose_name = 'Мерч в отправке'
         verbose_name_plural = 'Мерч в отправке'
 
+
 class Content(models.Model):
     """Модель контента."""
     ambassador = models.ForeignKey(
