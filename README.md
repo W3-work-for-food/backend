@@ -1,5 +1,5 @@
 
-# API сервис для CRM Амбассадоры Яндекса 
+# Backend REST API сервис для CRM Амбассадоры Яндекса 
 
 ### Описание проекта
 
@@ -15,7 +15,7 @@
 * Регистрация и авторизация.
 * Хранение и управление данными об амбассадорах.
 * Отслеживание активности, мерча, затрат.
-* Интеграция с яндекс формами.
+* FAQ и уведомления.
  - - - - - - - - - - - - - - - - - - - - - - - -
 
 ### Используемый стек
@@ -74,15 +74,94 @@ API Root будет доступен по адресу: http://localhost/api/
 docker-compose down -v
 ```
 - - - - - - - - - - - - - - - - - - - - - - - -
-#### Endpoints
+
+### Example
+
+<details><summary>Получение токена</summary>
+<br>
+
+ #### Request. Method POST
+
+```json
+{
+  "email": "manager@ya.ru",
+  "password": "password"
+}
+```
+
+ #### Response
+
+```json
+{
+  "token": "08e03bd172b69231e0af7234708fe1ff7546d0be"
+}
+```
+</details>
+
+<details><summary>Получение амбассадора</summary>
+<br>
+
+ #### Request. Method GET
+
+```djangourlpath
+
+http://localhost:8000/api/v1/ambassadors/{id}/
+
+```
+
+ #### Response
+
+```json
+{
+  "id": 1,
+  "pub_date": "2024-03-10T21:27:14.055Z",
+  "telegram": "@Joja_777",
+  "name": "Jon Snow",
+  "profile": {
+    "id": 1,
+    "email": "iceman@example.com",
+    "gender": "male",
+    "job": "string",
+    "clothing_size": "extra_small",
+    "foot_size": 45,
+    "blog_link": "https://game-of-thrones.cn/joja_777",
+    "additional": "string",
+    "education": "string",
+    "education_path": "string",
+    "education_goal": "string",
+    "phone": "+7 999 666 77 77"
+  },
+  "address": {
+    "id": 1,
+    "country": "США",
+    "region": "Калифорния",
+    "city": "Комптон",
+    "address": "707 Восток-Кокоа-стрит",
+    "postal_code": 214748
+  },
+  "promocodes": [
+    {
+      "id": 1,
+      "promocode": "RHGH6789J",
+      "is_active": true
+    }
+  ],
+  "comment": "",
+  "guide_status": true,
+  "status": "active"
+}
+```
+
+---
+### Endpoints
 
 [Авторизация](http://localhost:8000/login/)
 
 [SWAGGER проекта](http://localhost:8000/api/docs/)
 
 
-
 <!-- MARKDOWN LINKS & BADGES -->
+
 
 [Python-url]: https://www.python.org/
 
