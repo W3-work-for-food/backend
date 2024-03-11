@@ -152,6 +152,8 @@ http://localhost:8000/api/v1/ambassadors/{id}/
 }
 ```
 
+</details>
+
 ---
 ### Endpoints
 
@@ -159,8 +161,6 @@ http://localhost:8000/api/v1/ambassadors/{id}/
 
 [SWAGGER проекта](http://localhost:8000/api/docs/)
 
-
-<!-- MARKDOWN LINKS & BADGES -->
 
 
 [Python-url]: https://www.python.org/
