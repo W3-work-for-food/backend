@@ -4,22 +4,19 @@ from http import HTTPMethod
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, views, viewsets
-from rest_framework.status import HTTP_200_OK
-from rest_framework.decorators import action
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
 
-from ambassadors.models import (
-    Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch
-)
-from ambassadors.models import Notification
-from api.v1.serializers import (
-    AddressSerializer, AmbassadorReadSerializer, AmbassadorWriteSerializer,
-    ContentSerializer, MerchSerializer, ProfileSerializer,
-    PromocodeSerializer, SentMerchSerializer, NotificationSerializer,
-    UserSerializer
-)
+from ambassadors.models import (Address, Ambassador, Content, Merch,
+                                Notification, Profile, Promocode, SentMerch)
+from api.v1.serializers import (AddressSerializer, AmbassadorReadSerializer,
+                                AmbassadorWriteSerializer, ContentSerializer,
+                                MerchSerializer, NotificationSerializer,
+                                ProfileSerializer, PromocodeSerializer,
+                                SentMerchSerializer, UserSerializer)
+
 from .utils import read_notifications_for_month
 
 AMBASSADORS_DESCRIPTION = (

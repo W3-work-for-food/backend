@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.authtoken.views import ObtainAuthToken
-from drf_spectacular.utils import extend_schema
 
 
 class CustomAuthTokenSerializer(serializers.Serializer):

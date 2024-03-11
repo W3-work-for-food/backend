@@ -1,8 +1,7 @@
 from django.contrib import admin
 
-from ambassadors.models import (Address, Ambassador, Content, Merch, Profile,
-                                Promocode, SentMerch)
-from ambassadors.models import Notification
+from ambassadors.models import (Address, Ambassador, Content, Merch,
+                                Notification, Profile, Promocode, SentMerch)
 
 
 class PromocodeInline(admin.TabularInline):

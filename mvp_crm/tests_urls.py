@@ -1,5 +1,5 @@
-from django.urls import reverse, resolve
 from django.test import SimpleTestCase
+from django.urls import resolve, reverse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
