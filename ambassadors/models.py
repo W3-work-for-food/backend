@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from ambassadors.validators import (
-    validate_promo_code, validate_tg_name, UNIQUE_TG_NAME_ERROR
-)
+
+from ambassadors.validators import (UNIQUE_TG_NAME_ERROR, validate_promo_code,
+                                    validate_tg_name)
 from users.models import User
 
 STATUS_CHOICES = (

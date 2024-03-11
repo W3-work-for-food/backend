@@ -2,7 +2,7 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from ambassadors.models import Merch, Content, Ambassador, Address, Profile
+from ambassadors.models import Address, Ambassador, Content, Merch, Profile
 
 
 def clear_data(self):

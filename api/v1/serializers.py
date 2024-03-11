@@ -1,10 +1,9 @@
 from django.db.models import Q
 from rest_framework import serializers
 
-from ambassadors.models import (
-    Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch,
-    Notification, GENDER_CHOICES, CLOTHING_SIZE_CHOICES
-)
+from ambassadors.models import (CLOTHING_SIZE_CHOICES, GENDER_CHOICES, Address,
+                                Ambassador, Content, Merch, Notification,
+                                Profile, Promocode, SentMerch)
 from users.models import User
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
