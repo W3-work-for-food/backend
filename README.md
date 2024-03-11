@@ -20,6 +20,19 @@
 
  - - - - - - - - - - - - - - - - - - - - - - - -
 
+### Проект развернут на сервере:
+
+   * [_Админка_](http://team3mvpcrm.ru/admin/)
+   * _Авторизация(получение токена)_
+     * [_Swagger_](http://team3mvpcrm.ru/api/docs/) 
+     * [_Post запрос на ендпоинт_](https://github.com/W3-work-for-food/backend/blob/main/README.md#example)
+   
+      _Данные тестового менеджера:_
+     *  _login:_ **admin@admin.com**
+     *  _password:_ **admin**
+
+---
+
 ### Используемый стек
 
 [![Python][Python-badge]][Python-url]
