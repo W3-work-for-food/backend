@@ -154,25 +154,17 @@ class SentMerchViewSet(viewsets.ModelViewSet):
 
 
 @extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
-@api_view(['GET', 'PATCH'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def notification_detail(request, pk):
     """
     Получение и обновление уведомления по его идентификатору.
     """
     notification = Notification.objects.get(pk=pk)
-
-    if request.method == "GET":
-        serializer = NotificationSerializer(notification)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    elif request.method == "PATCH":
-        serializer = NotificationSerializer(notification, data=request.data,
-                                            partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    notification.status = 'read'
+    notification.save()
+    serializer = NotificationSerializer(notification)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['Уведомления'], description=NOTIFICATION_DESCRIPTION)
