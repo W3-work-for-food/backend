@@ -1,5 +1,5 @@
 
-# Backend REST API сервис для CRM Амбассадоры Яндекса 
+# REST API для CRM "Амбассадоры Яндекса" 
 
 ### Описание проекта
 
@@ -15,8 +15,23 @@
 * Регистрация и авторизация.
 * Хранение и управление данными об амбассадорах.
 * Отслеживание активности, мерча, затрат.
-* FAQ и уведомления.
+* Уведомления о новых амбассадорах.
+* [Интеграция с Яндекс формами](https://forms.yandex.ru/cloud/65d7aef15d2a069fad79d26e/)
+
  - - - - - - - - - - - - - - - - - - - - - - - -
+
+### Проект развернут на сервере:
+
+   * [_Админка_](http://team3mvpcrm.ru/admin/)
+   * _Авторизация(получение токена)_
+     * [_Swagger_](http://team3mvpcrm.ru/api/docs/) 
+     * [_Post запрос на ендпоинт_](https://github.com/W3-work-for-food/backend/blob/main/README.md#example)
+   
+      _Данные тестового менеджера:_
+     *  _login:_ **admin@admin.com**
+     *  _password:_ **admin**
+
+---
 
 ### Используемый стек
 
@@ -152,6 +167,8 @@ http://localhost:8000/api/v1/ambassadors/{id}/
 }
 ```
 
+</details>
+
 ---
 ### Endpoints
 
@@ -159,8 +176,6 @@ http://localhost:8000/api/v1/ambassadors/{id}/
 
 [SWAGGER проекта](http://localhost:8000/api/docs/)
 
-
-<!-- MARKDOWN LINKS & BADGES -->
 
 
 [Python-url]: https://www.python.org/
