@@ -1,0 +1,9 @@
+.venv
+.git
+.gitignore
+.idea
+
+db.*
+db.sqlite3
+
+requirements.txt

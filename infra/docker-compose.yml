@@ -1,0 +1,60 @@
+networks:
+  mvp_crm:
+
+volumes:
+  pg_backend_data_volume:
+  static_volume:
+
+services:
+  backend_db:
+    image: postgres:15.4
+    container_name: mvp_crm_db
+    restart: always
+    ports:
+      - '${BACKEND_POSTGRES_CONTAINER_PORT}:5432'
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_USER: '${BACKEND_POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${BACKEND_POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${BACKEND_POSTGRES_DB}'
+    volumes:
+      - pg_backend_data_volume:/var/lib/postgresql/data
+    networks:
+      - mvp_crm
+
+  backend:
+    restart: on-failure:5
+    container_name: mvp_crm_backend
+    build:
+      context: ../
+      dockerfile: ./Dockerfile
+    ports:
+      - '${BACKEND_CONTAINER_PORT}:8000'
+    volumes:
+      - ../:/srv/mvp_crm/backend
+      - static_volume:/srv/mvp_crm/backend/static
+    env_file:
+      - ../.env
+    networks:
+      - mvp_crm
+    depends_on:
+      - backend_db
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    container_name: mvp_crm_nginx
+    ports:
+      - '${NGINX_PORT}:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/srv/mvp_crm/backend/static
+    environment:
+      - DOMAIN=${DOMAIN}
+    networks:
+      mvp_crm:
+        aliases:
+          - '${DOMAIN}'
+    depends_on:
+      - backend
