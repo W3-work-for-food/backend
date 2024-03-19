@@ -1,15 +1,15 @@
 from datetime import datetime
 
 from drf_spectacular.utils import extend_schema
-from rest_framework.status import HTTP_201_CREATED
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.status import HTTP_201_CREATED
 
 from ambassadors.models import (
     Address, Ambassador, Content, Profile, Notification
 )
-from .views import AMBASSADORS_DESCRIPTION
+from api.v1.views.ambassador_view import AMBASSADORS_DESCRIPTION
 
 
 @extend_schema(tags=['Амбассадоры'], description=AMBASSADORS_DESCRIPTION)

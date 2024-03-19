@@ -1,68 +1,28 @@
 from django.db.models import Q
 from rest_framework import serializers
 
-from ambassadors.models import (
-    Address, Ambassador, Content, Merch, Profile, Promocode, SentMerch,
-    Notification, GENDER_CHOICES, CLOTHING_SIZE_CHOICES
-)
-from users.models import User
+from ambassadors.models import Promocode, Ambassador, Notification
+from api.v1.serializers import address_serializer as address_s
+from api.v1.serializers import profile_serializer as profile_s
+from api.v1.serializers import promocode_serializer as promocode_s
 
 ERR_EMAIL_MSG = 'Амбассадор с почтой {} уже существует'
 ERR_PROMO_MSG = 'Промокод {} уже существует'
 ERR_TG_MSG = 'Амбассадор с телеграмом {} уже существует'
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    """
-    Возвращает объекты модели Profile.
-    """
-
-    class Meta:
-        model = Profile
-        fields = (
-            'id', 'email', 'gender', 'job', 'clothing_size', 'foot_size',
-            'blog_link', 'additional', 'education', 'education_path',
-            'education_goal', 'phone'
-        )
-        read_only_fields = ('id',)
-
-
-class AddressSerializer(serializers.ModelSerializer):
-    """
-    Возвращает объекты модели Address.
-    """
-
-    class Meta:
-        model = Address
-        fields = ('id', 'country', 'region', 'city', 'address', 'postal_code')
-        read_only_fields = ('id',)
-
-
-class PromocodeSerializer(serializers.ModelSerializer):
-    """
-    Возвращает объекты модели Promocode.
-    """
-
-    class Meta:
-        model = Promocode
-        fields = ('id', 'promocode', 'is_active')
-
-
 class AmbassadorReadSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Ambassadors.
     """
-    promocodes = PromocodeSerializer(many=True)
-    address = AddressSerializer()
-    profile = ProfileSerializer()
+    promocodes = promocode_s.PromocodeSerializer(many=True)
+    address = address_s.AddressSerializer()
+    profile = profile_s.ProfileSerializer()
 
     def get_promocodes(self, ambassador):
         promocodes = Promocode.objects.filter(ambassador_id=ambassador.id)
-        serializer = PromocodeSerializer(promocodes, many=True)
+        serializer = promocode_s.PromocodeSerializer(promocodes, many=True)
         return serializer.data
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
 
     class Meta:
         model = Ambassador
@@ -80,9 +40,9 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
     """
     Возвращает объекты модели Ambassadors.
     """
-    promocodes = PromocodeSerializer(many=True, partial=True)
-    address = AddressSerializer(partial=True)
-    profile = ProfileSerializer(partial=True)
+    promocodes = promocode_s.PromocodeSerializer(many=True, partial=True)
+    address = address_s.AddressSerializer(partial=True)
+    profile = profile_s.ProfileSerializer(partial=True)
 
     def validate_profile(self, attrs):
         ambassador_id = self.instance.id if self.instance else None
@@ -127,11 +87,11 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         address_data = validated_data.pop('address')
         profile_data = validated_data.pop('profile')
 
-        address_serializer = AddressSerializer(data=address_data)
+        address_serializer = address_s.AddressSerializer(data=address_data)
         if address_serializer.is_valid():
             address = address_serializer.save()
 
-        profile_serializer = ProfileSerializer(data=profile_data)
+        profile_serializer = profile_s.ProfileSerializer(data=profile_data)
         if profile_serializer.is_valid():
             profile = profile_serializer.save()
 
@@ -149,7 +109,7 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         ]
 
         ambassador_data = self.to_representation(ambassador)
-        ambassador_data['promocodes'] = PromocodeSerializer(
+        ambassador_data['promocodes'] = promocode_s.PromocodeSerializer(
             promocodes, many=True
         ).data
 
@@ -221,86 +181,3 @@ class AmbassadorWriteSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'pub_date')
 
-
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор пользователя."""
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name')
-
-
-class ContentSerializer(serializers.ModelSerializer):
-    """Сериализатор контентапользователя."""
-    class Meta:
-        model = Content
-        fields = ['id', 'ambassador_id', 'link', 'date', 'guide_condition']
-
-
-class MerchSerializer(serializers.ModelSerializer):
-    """Сериализатор мечра."""
-    class Meta:
-        model = Merch
-        fields = '__all__'
-
-
-class AmbassadorSerializer(serializers.ModelSerializer):
-    """Сериализатор амбассадора."""
-    class Meta:
-        model = Ambassador
-        fields = '__all__'
-
-
-class SentMerchSerializer(serializers.ModelSerializer):
-    """Сериализатор отправки мерча."""
-    merch = MerchSerializer(many=True)
-    sized_merch = serializers.SerializerMethodField()
-    ambassador = AmbassadorSerializer()
-    user = UserSerializer()
-
-    class Meta:
-        model = SentMerch
-        fields = (
-            'id', 'user', 'date', 'ambassador', 'merch', 'amount',
-            'sized_merch',
-        )
-
-    def get_sized_merch(self, obj):
-        query = obj.merch.all()
-        ambassador = Ambassador.objects.get(id=obj.ambassador.id)
-        ambassador_profile = ambassador.profile
-
-        result = []
-        for merch in query:
-            match merch.category:
-                case 'outerwear':
-                    sized_merch = (
-                        merch.merch_type, ambassador_profile.clothing_size
-                    )
-                case 'socks':
-                    sized_merch = (
-                        merch.merch_type, ambassador_profile.foot_size
-                    )
-                case _:
-                    sized_merch = (merch.merch_type, None)
-            result.append(sized_merch)
-        return result
-
-
-class NotificationSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для модели уведомлений.
-    """
-    ambassador = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Notification
-        fields = ['id', 'pub_date', 'type', 'status', 'ambassador', ]
-        read_only_fields = ['id', 'pub_date', 'type', 'ambassador', ]
-
-    def get_ambassador(self, value):
-        data = {
-            'ambassador_id': value.ambassador.id,
-            'telegram': value.ambassador.telegram,
-            'name': value.ambassador.name
-        }
-        return data
